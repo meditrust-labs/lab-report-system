@@ -24,16 +24,19 @@ export default function NavigationBar() {
           <Navbar.Brand>
             <img
               alt=""
-              src="/sun.png"
+              src="/logo.png"
               width="30"
               height="30"
               className="d-inline-block align-top"
               style={{ marginRight: "1rem" }}
             />
-            SUNRISE DIAGNOSTIC CENTRE
+            MEDITRUST LAB
           </Navbar.Brand>
           <Nav className="ml-auto">
-            <Link className="btn btn-outline-primary" to="/change-password">
+            <Link
+              className="btn btn-outline-primary"
+              to="/dashboard/change-password"
+            >
               Change Password
             </Link>
             <Button

@@ -10,10 +10,10 @@ function App() {
       <Router>
         <AuthProvider>
           <Switch>
-            <PrivateRoute exact path="/" component={Dashboard} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/signup" component={Signup} />
-            <Route exact path="/reset-password" component={ResetPassword} />
+            <Route exact path="/" component={Login} />
+            <PrivateRoute path="/dashboard" component={Dashboard} />
+            <Route path="/signup" component={Signup} />
+            <Route path="/reset-password" component={ResetPassword} />
           </Switch>
         </AuthProvider>
       </Router>

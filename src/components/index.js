@@ -6,12 +6,16 @@ import ResetPassword from "./ResetPassword";
 import PrivateRoute from "./PrivateRoute";
 import NavigationBar from "./NavigationBar";
 import UpdatePassword from "./UpdatePassword";
+import MakeReport from "./MakeReport";
+import FindReport from "./FindReport";
 
 export {
   App,
   Login,
   Signup,
   Dashboard,
+  MakeReport,
+  FindReport,
   PrivateRoute,
   ResetPassword,
   NavigationBar,
