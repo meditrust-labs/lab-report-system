@@ -8,6 +8,7 @@ import NavigationBar from "./NavigationBar";
 import UpdatePassword from "./UpdatePassword";
 import MakeReport from "./MakeReport";
 import FindReport from "./FindReport";
+import CandidateForm from "./CandidateForm";
 
 export {
   App,
@@ -20,4 +21,5 @@ export {
   ResetPassword,
   NavigationBar,
   UpdatePassword,
+  CandidateForm,
 };

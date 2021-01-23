@@ -10,10 +10,10 @@ export default function NavigationBar() {
   async function handleLogout() {
     try {
       await logout();
-      history.push("/login");
+      history.push("/");
     } catch (err) {
       console.log(err);
-      history.push("/login");
+      history.push("/");
     }
   }
 
@@ -30,7 +30,17 @@ export default function NavigationBar() {
               className="d-inline-block align-top"
               style={{ marginRight: "1rem" }}
             />
-            MEDITRUST LAB
+            <Link
+              to="/dashboard"
+              style={{
+                textDecoration: "none",
+                cursor: "pointer",
+                color: "#000",
+                fontWeight: "500",
+              }}
+            >
+              MEDITRUST LAB
+            </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
             <Link
