@@ -40,6 +40,8 @@ async function generatePDF(formData, candidatePhoto, checkBoxes) {
   const covidValue = checkBoxes["covid"] ? "Positive" : "Negative";
   covidField.setText(covidValue);
 
+  form.flatten();
+
   const pdfBytes = await pdfDoc.save();
 
   require("downloadjs")(
