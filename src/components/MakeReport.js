@@ -103,8 +103,10 @@ function MakeReport() {
     );
   }
 
-  function generateReport(e) {
+  async function generateReport(e) {
     e.preventDefault();
+    setLoading(true);
+
     const formData = {
       labSrNo: labSrNoRef.current.value,
       refrenceNo: refrenceNoRef.current.value,
@@ -166,11 +168,14 @@ function MakeReport() {
     };
 
     const candidatePhoto = photoUrl;
-    console.log(formData);
-    console.log(candidatePhoto);
-    console.log(checkBoxes);
 
-    return;
+    try {
+      await generatePdf(formData, candidatePhoto, checkBoxes);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
   }
 
   return (
@@ -640,6 +645,7 @@ function MakeReport() {
         <br />
         <br />
         <Button
+          disabled={loading}
           type="submit"
           className="p-4"
           style={{ fontSize: "1.2rem", fontWeight: "bold" }}
