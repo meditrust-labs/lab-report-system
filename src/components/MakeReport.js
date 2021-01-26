@@ -959,8 +959,8 @@ function MakeReport() {
             <Button
               disabled={loading}
               type="submit"
-              className="p-4"
-              style={{ fontSize: "1.2rem", fontWeight: "bold" }}
+              className="px-4 py-2"
+              style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
             >
               GENERATE REPORT
             </Button>
