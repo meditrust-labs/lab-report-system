@@ -27,7 +27,7 @@ function UpdatePassword() {
         setMessage("Password changed successfully ! Please login again");
         setTimeout(async () => {
           await logout();
-          history.push("/login");
+          history.push("/");
         }, 1000);
       } catch (err) {
         console.log(err);
