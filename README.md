@@ -1,4 +1,11 @@
 # Lab Report Management System
+## For testing on live url 
+use email - test@test.com
+use password - abc123
+
+When finding report search in upper case letters
+
+## To run locally
 
 Add your own credentials of firebase project in firebase.js
 
