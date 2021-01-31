@@ -26,13 +26,6 @@ function FindReport() {
     let value = searchRef.current.value;
     const idx = selectRef.current.options.selectedIndex;
     const option = options[idx];
-    if ([1, 2, 4].includes(idx)) {
-      value = value.split("-");
-      let temp = value[0];
-      value[0] = value[2];
-      value[2] = temp;
-      value = value.join("-");
-    }
 
     const reportsRef = db.collection("reports");
     try {

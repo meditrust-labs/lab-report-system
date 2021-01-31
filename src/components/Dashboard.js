@@ -15,9 +15,9 @@ function Options() {
       <h1>
         <img
           alt=""
-          src="/report-icon.png"
+          src="/meditrust.png"
           className="d-inline-block align-top"
-          style={{ marginRight: "1rem" }}
+          style={{ marginRight: "1rem", width: "25rem" }}
         />
       </h1>
       <br />
@@ -27,7 +27,7 @@ function Options() {
         className="btn btn-primary px-5"
         style={{ fontSize: "20px" }}
       >
-        File a Report
+        New Report
       </Link>
       <Link
         to="/dashboard/search"

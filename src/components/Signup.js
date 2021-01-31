@@ -60,7 +60,7 @@ function Signup() {
           </Card.Body>
         </Card>
         <div className="mt-4 text-center">
-          <Link to="/login">Login</Link>
+          <Link to="/">Login</Link>
         </div>
       </div>
     </Container>

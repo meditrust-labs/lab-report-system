@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 
-async function generatePDF(formData, candidatePhoto, checkBoxes) {
+async function generatePDF(formData, candidatePhoto) {
   try {
     // Fetch the PDF with form fields
     const formUrl =
@@ -31,16 +31,6 @@ async function generatePDF(formData, candidatePhoto, checkBoxes) {
     // set candidate photo
     const photoField = form.getButton("photo");
     photoField.setImage(photo);
-
-    // set checkboxes
-    const fitField = form.getTextField("fit");
-    const covidField = form.getTextField("covid");
-
-    const fitValue = checkBoxes["fit"] ? "FIT" : "UNFIT";
-    fitField.setText(fitValue);
-
-    const covidValue = checkBoxes["covid"] ? "Positive" : "Negative";
-    covidField.setText(covidValue);
 
     form.flatten();
 

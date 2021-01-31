@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import { storage, db } from "../firebase";
 import generatePdf from "../pdfLib";
@@ -79,6 +79,15 @@ function MakeReport() {
   const [fetching, setFetching] = useState(true);
   const [edit, setEdit] = useState(false);
 
+  function convertDate(value) {
+    let date = value.split("-");
+    let temp = date[0];
+    date[0] = date[2];
+    date[2] = temp;
+    date = date.join("-");
+    return date;
+  }
+
   function handleChange(e) {
     if (e.target.files[0]) {
       setPhoto(e.target.files[0]);
@@ -107,35 +116,37 @@ function MakeReport() {
     );
   }
 
-  async function updateReport(formData, candidatePhoto, checkBoxes) {
+  async function updateReport(formData, candidatePhoto) {
     try {
       await db
         .collection("reports")
         .doc(current.labSrNo)
-        .update({ ...formData, ...checkBoxes, candidatePhoto });
+        .update({ ...formData, candidatePhoto });
     } catch (err) {
       console.log(err);
     }
   }
 
-  async function saveReport(formData, candidatePhoto, checkBoxes) {
+  async function saveReport(formData, candidatePhoto) {
     try {
       await db
+        .collection("reports")
+        .doc(`EMPTY_${current.lab + 1}`)
+        .set({ ...formData, candidatePhoto });
+
+      await db
         .collection("current")
-        .doc("qQPUfK0bBrOKPydyBtH3")
+        .doc(current.id)
         .update({
           lab: current.lab + 1,
           refrence: current.refrence + 1,
         });
-      await db
-        .collection("reports")
-        .doc(`EMPTY_${current.lab + 1}`)
-        .set({ ...formData, ...checkBoxes, candidatePhoto });
     } catch (err) {
       console.log(err);
     }
   }
 
+  const history = useHistory();
   async function generateReport(e) {
     e.preventDefault();
     setLoading(true);
@@ -143,18 +154,18 @@ function MakeReport() {
     const formData = {
       labSrNo: labSrNoRef.current.value,
       refrenceNo: refrenceNoRef.current.value,
-      dateExamined: dateExaminedRef.current.value,
-      dateExpiry: dateExpiryRef.current.value,
-      fullName: fullNameRef.current.value,
+      dateExamined: convertDate(dateExaminedRef.current.value),
+      dateExpiry: convertDate(dateExpiryRef.current.value),
+      fullName: fullNameRef.current.value.toUpperCase(),
       age: ageRef.current.value,
       gender: genderRef.current.value,
       height: heightRef.current.value,
       weight: weightRef.current.value,
       maritalStatus: maritalStatusRef.current.value,
-      dob: dobRef.current.value,
+      dob: convertDate(dobRef.current.value),
       nationality: nationalityRef.current.value,
-      passport: passportRef.current.value,
-      doi: doiRef.current.value,
+      passport: passportRef.current.value.toUpperCase(),
+      doi: convertDate(doiRef.current.value),
       poi: poiRef.current.value,
       post: postRef.current.value,
       visionRightEye: visionRightEyeRef.current.value,
@@ -193,27 +204,25 @@ function MakeReport() {
       bloodSugar: bloodSugarRef.current.value,
       kft: kftRef.current.value,
       remarks: remarksRef.current.value,
-    };
-
-    const checkBoxes = {
-      fit: fitRef.current.checked,
-      covid: covidRef.current.checked,
+      fit: fitRef.current.value,
+      covid: covidRef.current.value,
     };
 
     const candidatePhoto = photoUrl;
 
     try {
-      await generatePdf(formData, candidatePhoto, checkBoxes);
+      await generatePdf(formData, candidatePhoto);
       if (edit) {
-        await updateReport(formData, candidatePhoto, checkBoxes);
+        await updateReport(formData, candidatePhoto);
       } else {
-        await saveReport(formData, candidatePhoto, checkBoxes);
+        await saveReport(formData, candidatePhoto);
       }
-      setLoading(false);
     } catch (err) {
-      setLoading(false);
       console.log(err);
     }
+
+    setLoading(false);
+    history.push("/dashboard");
   }
 
   const location = useLocation();
@@ -227,10 +236,9 @@ function MakeReport() {
         try {
           const querySnapshot = await db.collection("current").get();
           querySnapshot.forEach((doc) => {
-            setCurrent(doc.data());
+            setCurrent({ id: doc.id, ...doc.data() });
             setEdit(false);
             setFetching(false);
-            // console.log(current);
           });
         } catch (err) {
           console.log(err);
@@ -240,12 +248,19 @@ function MakeReport() {
         try {
           const doc = await db.collection("reports").doc(labSrNo).get();
           if (doc.exists) {
-            setCurrent(doc.data());
+            let data = doc.data();
+            data["dateExamined"] = convertDate(data["dateExamined"]);
+            data["dateExpiry"] = convertDate(data["dateExpiry"]);
+            data["dob"] = convertDate(data["dob"]);
+            data["doi"] = convertDate(data["doi"]);
+
+            setCurrent(data);
             setEdit(true);
             setPhotoUrl(doc.data().candidatePhoto);
             setFetching(false);
           } else {
             console.log("no such doc");
+            history.push("/dashboard/search");
           }
         } catch (err) {
           console.log(err);
@@ -909,14 +924,16 @@ function MakeReport() {
                   <Card.Body>
                     <Card.Title>Covid</Card.Title>
                     <Form.Group>
-                      <Form.Check
+                      <Form.Control
+                        as="select"
                         className="covid"
-                        type="checkbox"
                         ref={covidRef}
-                        label="Positive"
-                        style={{ fontSize: "1.4rem" }}
-                        defaultChecked={edit ? current.covid : false}
-                      />
+                        defaultValue={edit ? current.covid : "Negative"}
+                        custom
+                      >
+                        <option value="Positive"> Positive </option>
+                        <option value="Negative"> Negative </option>
+                      </Form.Control>
                     </Form.Group>
                   </Card.Body>
                 </Card>
@@ -932,13 +949,17 @@ function MakeReport() {
                   <Card.Body>
                     <Card.Title>Remarks</Card.Title>
                     <Form.Group>
-                      <Form.Check
-                        type="checkbox"
+                      <Form.Label>FIT or UNFIT</Form.Label>
+                      <Form.Control
+                        as="select"
+                        className="fit"
                         ref={fitRef}
-                        label="FIT"
-                        style={{ fontSize: "2rem" }}
-                        defaultChecked={edit ? current.fit : false}
-                      />
+                        defaultValue={edit ? current.fit : "UNFIT"}
+                        custom
+                      >
+                        <option value="FIT"> FIT </option>
+                        <option value="UNFIT"> UNFIT </option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group>
                       <Form.Label>Remarks:- </Form.Label>
@@ -952,6 +973,7 @@ function MakeReport() {
                   </Card.Body>
                 </Card>
               </Col>
+              <Col></Col>
             </Row>
 
             <br />
