@@ -16,7 +16,6 @@ export default function NavigationBar() {
     try {
       const snapshot = await db.collection("current").get();
       const docId = snapshot.docs[0].id;
-
       await db.collection("current").doc(docId).update({ refrence: 0 });
     } catch (err) {
       console.log(err);

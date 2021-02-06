@@ -32,8 +32,8 @@ function MakeReport() {
   const lungsRef = useRef();
   const abdomenRef = useRef();
 
-  const vdrlRef = useRef();
-  const tphaRef = useRef();
+  const VDRLorTPHA_Ref = useRef();
+  // const tphaRef = useRef();
 
   const chestRef = useRef();
   const pregnancyRef = useRef();
@@ -191,8 +191,8 @@ function MakeReport() {
       stoolBilharziasis: stoolBilharziasisRef.current.value,
       salmonellaShigella: salmonellaShigellaRef.current.value,
       cholera: choleraRef.current.value,
-      vdrl: vdrlRef.current.value,
-      tpha: tphaRef.current.value,
+      VDRLorTPHA: VDRLorTPHA_Ref.current.value,
+      // tpha: tphaRef.current.value,
       chest: chestRef.current.value,
       pregnancy: pregnancyRef.current.value,
       hiv: hivRef.current.value,
@@ -649,21 +649,21 @@ function MakeReport() {
                   <Card.Body>
                     <Card.Title>VENEREAL DISEASES (CLINICAL)</Card.Title>
                     <Form.Group id="vdrl">
-                      <Form.Label>VDRL</Form.Label>
+                      <Form.Label>VDRL/TPHA</Form.Label>
                       <Form.Control
                         type="text"
-                        ref={vdrlRef}
-                        defaultValue={edit ? current.vdrl : ``}
+                        ref={VDRLorTPHA_Ref}
+                        defaultValue={edit ? current.VDRLorTPHA : ``}
                       />
                     </Form.Group>
-                    <Form.Group id="tpha">
+                    {/* <Form.Group id="tpha">
                       <Form.Label>TPHA</Form.Label>
                       <Form.Control
                         type="text"
                         ref={tphaRef}
                         defaultValue={edit ? current.tpha : ``}
                       />
-                    </Form.Group>
+                    </Form.Group> */}
                   </Card.Body>
                 </Card>
               </Col>
@@ -771,20 +771,20 @@ function MakeReport() {
                         defaultValue={edit ? current.malariaFilm : ``}
                       />
                     </Form.Group>
-                    <Form.Group id="blood-group">
-                      <Form.Label>Blood Group</Form.Label>
-                      <Form.Control
-                        type="text"
-                        ref={bloodGroupRef}
-                        defaultValue={edit ? current.bloodGroup : ``}
-                      />
-                    </Form.Group>
                     <Form.Group id="micro-filaria">
                       <Form.Label>Micro Filaria</Form.Label>
                       <Form.Control
                         type="text"
                         ref={microFilariaRef}
                         defaultValue={edit ? current.microFilaria : ``}
+                      />
+                    </Form.Group>
+                    <Form.Group id="blood-group">
+                      <Form.Label>Blood Group</Form.Label>
+                      <Form.Control
+                        type="text"
+                        ref={bloodGroupRef}
+                        defaultValue={edit ? current.bloodGroup : ``}
                       />
                     </Form.Group>
                     <Form.Group id="blood-others">
