@@ -426,11 +426,17 @@ function MakeReport() {
                     <Form.Group id="gender">
                       <Form.Label>Gender</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={genderRef}
                         defaultValue={edit ? current.gender : ``}
                         required
-                      />
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="height">
                       <Form.Label>Height (cm)</Form.Label>
@@ -439,7 +445,9 @@ function MakeReport() {
                         ref={heightRef}
                         defaultValue={edit ? current.height : ``}
                         required
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>cm</span>
                     </Form.Group>
                   </Card.Body>
                 </Card>
@@ -454,16 +462,26 @@ function MakeReport() {
                         ref={weightRef}
                         defaultValue={edit ? current.weight : ``}
                         required
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>Kg</span>
                     </Form.Group>
                     <Form.Group id="marital-status">
                       <Form.Label> Marital Status </Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={maritalStatusRef}
                         defaultValue={edit ? current.maritalStatus : ``}
+                        custom
                         required
-                      />
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Single"> Single </option>
+                        <option value="Married"> Married </option>
+                        <option value="Divorced"> Divorced </option>
+                        <option value="Seperated"> Seperated </option>
+                        <option value="Widow (er)"> Widow (er) </option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="date-of-birth">
                       <Form.Label>Date of Birth</Form.Label>
@@ -547,33 +565,45 @@ function MakeReport() {
                     <Form.Group id="vision-right-eye">
                       <Form.Label>Vision Right Eye</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         defaultValue={edit ? current.visionRightEye : ``}
                         ref={visionRightEyeRef}
-                      />
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="6/6">6/6</option>
+                        <option value="6/9">6/9</option>
+                        <option value="6/18">6/18</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="other-right-eye">
                       <Form.Label>Other Right Eye</Form.Label>
                       <Form.Control
                         type="text"
                         ref={otherRightEyeRef}
-                        defaultValue={edit ? current.otherRightEye : ``}
+                        defaultValue={edit ? current.otherRightEye : `NAD`}
                       />
                     </Form.Group>
                     <Form.Group id="vision-left-eye">
                       <Form.Label>Vision Left Eye</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={visionLeftEyeRef}
                         defaultValue={edit ? current.visionLeftEye : ``}
-                      />
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="6/6">6/6</option>
+                        <option value="6/9">6/9</option>
+                        <option value="6/18">6/18</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="other-left-eye">
                       <Form.Label>Other Left Eye</Form.Label>
                       <Form.Control
                         type="text"
                         ref={otherLeftEyeRef}
-                        defaultValue={edit ? current.otherLeftEye : ``}
+                        defaultValue={edit ? current.otherLeftEye : `NAD`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -588,7 +618,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={rightEarRef}
-                        defaultValue={edit ? current.rightEar : ``}
+                        defaultValue={edit ? current.rightEar : `NAD`}
                       />
                     </Form.Group>
                     <Form.Group id="left-ear">
@@ -596,7 +626,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={leftEarRef}
-                        defaultValue={edit ? current.leftEar : ``}
+                        defaultValue={edit ? current.leftEar : `NAD`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -612,7 +642,9 @@ function MakeReport() {
                         type="text"
                         ref={bloodPressureRef}
                         defaultValue={edit ? current.bloodPressure : ``}
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>mm Hg</span>
                     </Form.Group>
                     <Form.Group id="heart">
                       <Form.Label>Heart</Form.Label>
@@ -676,7 +708,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={chestRef}
-                        defaultValue={edit ? current.chest : ``}
+                        defaultValue={edit ? current.chest : `NAD`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -691,7 +723,9 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={pregnancyRef}
-                        defaultValue={edit ? current.pregnancy : ``}
+                        defaultValue={
+                          edit ? current.pregnancy : `Not Applicable`
+                        }
                       />
                     </Form.Group>
                   </Card.Body>
@@ -720,7 +754,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={sugarRef}
-                        defaultValue={edit ? current.sugar : ``}
+                        defaultValue={edit ? current.sugar : `nil`}
                       />
                     </Form.Group>
                     <Form.Group id="albumin">
@@ -728,7 +762,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={albuminRef}
-                        defaultValue={edit ? current.albumin : ``}
+                        defaultValue={edit ? current.albumin : `nil`}
                       />
                     </Form.Group>
                     <Form.Group id="urine-bilharziasis">
@@ -736,7 +770,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={urineBilharziasisRef}
-                        defaultValue={edit ? current.urineBilharziasis : ``}
+                        defaultValue={edit ? current.urineBilharziasis : `nil`}
                       />
                     </Form.Group>
                     <Form.Group id="urine-others">
@@ -761,14 +795,16 @@ function MakeReport() {
                         type="text"
                         ref={hemoglobinRef}
                         defaultValue={edit ? current.hemoglobin : ``}
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>gm %</span>
                     </Form.Group>
                     <Form.Group id="malaria-film">
                       <Form.Label>Malaria Film</Form.Label>
                       <Form.Control
                         type="text"
                         ref={malariaFilmRef}
-                        defaultValue={edit ? current.malariaFilm : ``}
+                        defaultValue={edit ? current.malariaFilm : `Not Seen`}
                       />
                     </Form.Group>
                     <Form.Group id="micro-filaria">
@@ -776,16 +812,30 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={microFilariaRef}
-                        defaultValue={edit ? current.microFilaria : ``}
+                        defaultValue={
+                          edit ? current.microFilaria : `Non Reactive`
+                        }
                       />
                     </Form.Group>
                     <Form.Group id="blood-group">
                       <Form.Label>Blood Group</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={bloodGroupRef}
                         defaultValue={edit ? current.bloodGroup : ``}
-                      />
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+
+                        <option value="A+">A+</option>
+                        <option value="B+">B+</option>
+                        <option value="O+">O+</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O-">O-</option>
+                        <option value="B-">B-</option>
+                        <option value="A-">A-</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="blood-others">
                       <Form.Label>Others</Form.Label>
@@ -808,7 +858,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={helminthsRef}
-                        defaultValue={edit ? current.helminths : ``}
+                        defaultValue={edit ? current.helminths : `Not Seen`}
                       />
                     </Form.Group>
                     <Form.Group id="stool-bilharziasis">
@@ -816,7 +866,9 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={stoolBilharziasisRef}
-                        defaultValue={edit ? current.stoolBilharziasis : ``}
+                        defaultValue={
+                          edit ? current.stoolBilharziasis : `Not Seen`
+                        }
                       />
                     </Form.Group>
                     <Form.Group id="salmonella-shigella">
@@ -824,7 +876,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={salmonellaShigellaRef}
-                        defaultValue={edit ? current.salmonellaShigella : ``}
+                        defaultValue={edit ? current.salmonellaShigella : `NAD`}
                       />
                     </Form.Group>
                     <Form.Group id="v-cholera">
@@ -832,7 +884,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={choleraRef}
-                        defaultValue={edit ? current.cholera : ``}
+                        defaultValue={edit ? current.cholera : `NAD`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -850,7 +902,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={hivRef}
-                        defaultValue={edit ? current.hiv : ``}
+                        defaultValue={edit ? current.hiv : `Non Reactive`}
                       />
                     </Form.Group>
                     <Form.Group id="hbsag">
@@ -858,7 +910,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={hbsagRef}
-                        defaultValue={edit ? current.hbsag : ``}
+                        defaultValue={edit ? current.hbsag : `Non Reactive`}
                       />
                     </Form.Group>
                     <Form.Group id="anti-hcv">
@@ -866,7 +918,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={antiHCVRef}
-                        defaultValue={edit ? current.antiHCV : ``}
+                        defaultValue={edit ? current.antiHCV : `Non Reactive`}
                       />
                     </Form.Group>
                     <Form.Group id="lft">
@@ -874,7 +926,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={lftRef}
-                        defaultValue={edit ? current.lft : ``}
+                        defaultValue={edit ? current.lft : `Normal`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -890,7 +942,9 @@ function MakeReport() {
                         type="text"
                         ref={ureaRef}
                         defaultValue={edit ? current.urea : ``}
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
                     </Form.Group>
                     <Form.Group id="creatinine">
                       <Form.Label>Creatinine</Form.Label>
@@ -898,7 +952,9 @@ function MakeReport() {
                         type="text"
                         ref={creatinineRef}
                         defaultValue={edit ? current.creatinine : ``}
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
                     </Form.Group>
                     <Form.Group id="blood-sugar">
                       <Form.Label>Blood Sugar</Form.Label>
@@ -906,14 +962,16 @@ function MakeReport() {
                         type="text"
                         ref={bloodSugarRef}
                         defaultValue={edit ? current.bloodSugar : ``}
+                        style={{ display: "inline" }}
                       />
+                      <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
                     </Form.Group>
                     <Form.Group id="kft">
                       <Form.Label>K.F.T.</Form.Label>
                       <Form.Control
                         type="text"
                         ref={kftRef}
-                        defaultValue={edit ? current.kft : ``}
+                        defaultValue={edit ? current.kft : `Normal`}
                       />
                     </Form.Group>
                   </Card.Body>
@@ -928,9 +986,10 @@ function MakeReport() {
                         as="select"
                         className="covid"
                         ref={covidRef}
-                        defaultValue={edit ? current.covid : "Negative"}
+                        defaultValue={edit ? current.covid : ""}
                         custom
                       >
+                        <option value="">-- Select --</option>
                         <option value="Positive"> Positive </option>
                         <option value="Negative"> Negative </option>
                       </Form.Control>
@@ -954,9 +1013,10 @@ function MakeReport() {
                         as="select"
                         className="fit"
                         ref={fitRef}
-                        defaultValue={edit ? current.fit : "UNFIT"}
+                        defaultValue={edit ? current.fit : ""}
                         custom
                       >
+                        <option value="">-- Select --</option>
                         <option value="FIT"> FIT </option>
                         <option value="UNFIT"> UNFIT </option>
                       </Form.Control>
