@@ -159,8 +159,8 @@ function MakeReport() {
       fullName: fullNameRef.current.value.toUpperCase(),
       age: ageRef.current.value,
       gender: genderRef.current.value,
-      height: heightRef.current.value,
-      weight: weightRef.current.value,
+      height: heightRef.current.value + " cm",
+      weight: weightRef.current.value + " kg",
       maritalStatus: maritalStatusRef.current.value,
       dob: convertDate(dobRef.current.value),
       nationality: nationalityRef.current.value,
@@ -178,12 +178,12 @@ function MakeReport() {
       urineOthers: urineOthersRef.current.value,
       rightEar: rightEarRef.current.value,
       leftEar: leftEarRef.current.value,
-      hemoglobin: hemoglobinRef.current.value,
+      hemoglobin: hemoglobinRef.current.value + " gm %",
       malariaFilm: malariaFilmRef.current.value,
       bloodGroup: bloodGroupRef.current.value,
       microFilaria: microFilariaRef.current.value,
       bloodOthers: bloodOthersRef.current.value,
-      bloodPressure: bloodPressureRef.current.value,
+      bloodPressure: bloodPressureRef.current.value + " mm Hg",
       heart: heartRef.current.value,
       lungs: lungsRef.current.value,
       abdomen: abdomenRef.current.value,
@@ -199,9 +199,9 @@ function MakeReport() {
       hbsag: hbsagRef.current.value,
       antiHCV: antiHCVRef.current.value,
       lft: lftRef.current.value,
-      urea: ureaRef.current.value,
-      creatinine: creatinineRef.current.value,
-      bloodSugar: bloodSugarRef.current.value,
+      urea: ureaRef.current.value + " mg/dl",
+      creatinine: creatinineRef.current.value + " mg/dl",
+      bloodSugar: bloodSugarRef.current.value + " mg/dl",
       kft: kftRef.current.value,
       remarks: remarksRef.current.value,
       fit: fitRef.current.value,
@@ -211,7 +211,7 @@ function MakeReport() {
     const candidatePhoto = photoUrl;
 
     try {
-      await generatePdf(formData, candidatePhoto);
+      await generatePdf(formData, candidatePhoto, edit);
       if (edit) {
         await updateReport(formData, candidatePhoto);
       } else {
@@ -254,11 +254,21 @@ function MakeReport() {
             data["dob"] = convertDate(data["dob"]);
             data["doi"] = convertDate(data["doi"]);
 
+            data["weight"] = data["weight"].split(" ")[0];
+            data["height"] = data["height"].split(" ")[0];
+            data["urea"] = data["urea"].split(" ")[0];
+            data["creatinine"] = data["creatinine"].split(" ")[0];
+            data["bloodSugar"] = data["bloodSugar"].split(" ")[0];
+            data["hemoglobin"] = data["hemoglobin"].split(" ")[0];
+            data["bloodPressure"] = data["bloodPressure"].split(" ")[0];
+            data["bloodSugar"] = data["bloodSugar"].split(" ")[0];
+
             setCurrent(data);
             setEdit(true);
             setPhotoUrl(doc.data().candidatePhoto);
             setFetching(false);
           } else {
+            alert("no such report found");
             console.log("no such doc");
             history.push("/dashboard/search");
           }
@@ -441,7 +451,7 @@ function MakeReport() {
                     <Form.Group id="height">
                       <Form.Label>Height (cm)</Form.Label>
                       <Form.Control
-                        type="number"
+                        type="text"
                         ref={heightRef}
                         defaultValue={edit ? current.height : ``}
                         required
@@ -458,7 +468,7 @@ function MakeReport() {
                     <Form.Group id="weight">
                       <Form.Label>Weight (Kg) </Form.Label>
                       <Form.Control
-                        type="number"
+                        type="text"
                         ref={weightRef}
                         defaultValue={edit ? current.weight : ``}
                         required

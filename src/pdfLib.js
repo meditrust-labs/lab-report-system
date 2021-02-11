@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 
-async function generatePDF(formData, candidatePhoto) {
+async function generatePDF(formData, candidatePhoto, edit) {
   try {
     // Fetch the PDF with form fields
     const formUrl =
@@ -31,6 +31,10 @@ async function generatePDF(formData, candidatePhoto) {
     // set candidate photo
     const photoField = form.getButton("photo");
     photoField.setImage(photo);
+
+    if (edit) {
+      // attach signatue and doctor's name
+    }
 
     form.flatten();
 
