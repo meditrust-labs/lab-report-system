@@ -60,6 +60,21 @@ export default function NavigationBar() {
             </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
+            <Link
+              className="btn btn-primary"
+              to="/dashboard/report"
+              style={{ marginRight: "1rem" }}
+            >
+              New Report
+            </Link>
+
+            <Link
+              className="btn btn-dark"
+              to="/dashboard/search"
+              style={{ marginRight: "6rem" }}
+            >
+              Find Report
+            </Link>
             <Button onClick={updateRefrence} disabled={loading}>
               Reset Refrence
             </Button>

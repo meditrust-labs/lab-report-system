@@ -78,6 +78,17 @@ function MakeReport() {
   const [current, setCurrent] = useState({});
   const [fetching, setFetching] = useState(true);
   const [edit, setEdit] = useState(false);
+  const [pregnancy, setPregnancy] = useState("Not Applicable");
+
+  function setPregnancyValue() {
+    // console.log("outer => ", genderRef.current.value);
+    if (genderRef.current.value === "Female") {
+      // console.log("applicable");
+      setPregnancy("Applicable");
+    } else {
+      setPregnancy("Not Applicable");
+    }
+  }
 
   function convertDate(value) {
     let date = value.split("-");
@@ -96,7 +107,10 @@ function MakeReport() {
 
   function uploadFile() {
     setLoading(true);
-    const uploadTask = storage.ref(`images/${photo.name}`).put(photo);
+    const date = new Date().toISOString();
+    const name = photo.name + "_" + date;
+
+    const uploadTask = storage.ref(`images/${name}`).put(photo);
     uploadTask.on(
       "state_changed",
       (snapshot) => {},
@@ -106,7 +120,7 @@ function MakeReport() {
       () => {
         storage
           .ref("images")
-          .child(photo.name)
+          .child(name)
           .getDownloadURL()
           .then((url) => {
             setPhotoUrl(url);
@@ -128,19 +142,20 @@ function MakeReport() {
   }
 
   async function saveReport(formData, candidatePhoto) {
-    try {
-      await db
-        .collection("reports")
-        .doc(`EMPTY_${current.lab + 1}`)
-        .set({ ...formData, candidatePhoto });
+    const saveData = db
+      .collection("reports")
+      .doc(`EMPTY_${current.lab + 1}`)
+      .set({ ...formData, candidatePhoto });
 
-      await db
-        .collection("current")
-        .doc(current.id)
-        .update({
-          lab: current.lab + 1,
-          refrence: current.refrence + 1,
-        });
+    const updateCurrent = db
+      .collection("current")
+      .doc(current.id)
+      .update({
+        lab: current.lab + 1,
+        refrence: current.refrence + 1,
+      });
+    try {
+      await Promise.all([saveData, updateCurrent]);
     } catch (err) {
       console.log(err);
     }
@@ -150,7 +165,6 @@ function MakeReport() {
   async function generateReport(e) {
     e.preventDefault();
     setLoading(true);
-
     const formData = {
       labSrNo: labSrNoRef.current.value,
       refrenceNo: refrenceNoRef.current.value,
@@ -207,16 +221,18 @@ function MakeReport() {
       fit: fitRef.current.value,
       covid: covidRef.current.value,
     };
-
     const candidatePhoto = photoUrl;
 
+    const pdf = generatePdf(formData, candidatePhoto, edit);
+    let saveData;
+    if (edit) {
+      saveData = updateReport(formData, candidatePhoto);
+    } else {
+      saveData = saveReport(formData, candidatePhoto);
+    }
+
     try {
-      await generatePdf(formData, candidatePhoto, edit);
-      if (edit) {
-        await updateReport(formData, candidatePhoto);
-      } else {
-        await saveReport(formData, candidatePhoto);
-      }
+      await Promise.all([pdf, saveData]);
     } catch (err) {
       console.log(err);
     }
@@ -441,6 +457,7 @@ function MakeReport() {
                         defaultValue={edit ? current.gender : ``}
                         required
                         custom
+                        onChange={setPregnancyValue}
                       >
                         <option value="">-- Select --</option>
                         <option value="Male">Male</option>
@@ -733,9 +750,8 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={pregnancyRef}
-                        defaultValue={
-                          edit ? current.pregnancy : `Not Applicable`
-                        }
+                        value={pregnancy}
+                        onChange={() => {}}
                       />
                     </Form.Group>
                   </Card.Body>

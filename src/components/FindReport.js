@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -42,6 +42,21 @@ function FindReport() {
     setLoading(false);
     return;
   }
+
+  useEffect(() => {
+    async function fetchReports() {
+      setLoading(true);
+      try {
+        const snapshot = await db.collection("reports").get();
+        setData(snapshot.docs);
+      } catch (err) {
+        console.log(err);
+      }
+      setLoading(false);
+    }
+
+    fetchReports();
+  }, []);
 
   return (
     <Container className="pt-4 text-center">

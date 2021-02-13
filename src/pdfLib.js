@@ -1,15 +1,20 @@
 import { PDFDocument } from "pdf-lib";
 
 async function generatePDF(formData, candidatePhoto, edit) {
-  try {
-    // Fetch the PDF with form fields
-    const formUrl =
-      "https://mohdimran001.github.io/lab-report-management-system/public/report.pdf";
-    const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
+  const formUrl =
+    "https://mohdimran001.github.io/lab-report-management-system/public/report.pdf";
+  const photoUrl = candidatePhoto;
 
-    // Fetch the photo
-    const photoUrl = candidatePhoto;
-    const photoBytes = await fetch(photoUrl).then((res) => res.arrayBuffer());
+  // // Fetch the PDF with form fields
+  // const formPdfBytes = fetch(formUrl).then((res) => res.arrayBuffer());
+  // // Fetch the photo
+  // const photoBytes = fetch(photoUrl).then((res) => res.arrayBuffer());
+
+  try {
+    const [formPdfBytes, photoBytes] = await Promise.all([
+      fetch(formUrl).then((res) => res.arrayBuffer()),
+      fetch(photoUrl).then((res) => res.arrayBuffer()),
+    ]);
 
     // Load a PDF with form fields
     const pdfDoc = await PDFDocument.load(formPdfBytes);
@@ -34,6 +39,18 @@ async function generatePDF(formData, candidatePhoto, edit) {
 
     if (edit) {
       // attach signatue and doctor's name
+      const signUrl =
+        "https://mohdimran001.github.io/lab-report-management-system/public/sign.jpeg";
+      const signBytes = await fetch(signUrl).then((res) => res.arrayBuffer());
+
+      // Embed the sign
+      const sign = await pdfDoc.embedJpg(signBytes);
+      const signField = form.getButton("signature");
+      signField.setImage(sign);
+
+      form.getTextField("dr_name").setText("DR. K.D. GANDHI");
+      form.getTextField("dr_degree").setText("MBBS, MD (Micro)");
+      form.getTextField("dr_position").setText("(Consultant Pathologist)");
     }
 
     form.flatten();
