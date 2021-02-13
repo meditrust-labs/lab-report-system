@@ -47,7 +47,11 @@ function FindReport() {
     async function fetchReports() {
       setLoading(true);
       try {
-        const snapshot = await db.collection("reports").get();
+        const snapshot = await db
+          .collection("reports")
+          .orderBy("labSrNo", "desc")
+          .limit(15)
+          .get();
         setData(snapshot.docs);
       } catch (err) {
         console.log(err);

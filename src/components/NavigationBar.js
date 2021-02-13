@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Navbar, Nav, Button, Container, Modal } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
@@ -10,6 +10,10 @@ export default function NavigationBar() {
   const history = useHistory();
 
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const closeModal = () => setShow(false);
+  const showModal = () => setShow(true);
 
   async function updateRefrence() {
     setLoading(true);
@@ -20,6 +24,7 @@ export default function NavigationBar() {
     } catch (err) {
       console.log(err);
     }
+    closeModal();
     history.push("/dashboard");
     setLoading(false);
   }
@@ -60,13 +65,20 @@ export default function NavigationBar() {
             </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
-            <Link
+            <Button
               className="btn btn-primary"
-              to="/dashboard/report"
               style={{ marginRight: "1rem" }}
+              onClick={() => {
+                if (window.location.href.includes("edit")) {
+                  history.push("/dashboard/report");
+                  window.location.reload();
+                } else {
+                  history.push("/dashboard/report");
+                }
+              }}
             >
               New Report
-            </Link>
+            </Button>
 
             <Link
               className="btn btn-dark"
@@ -75,16 +87,15 @@ export default function NavigationBar() {
             >
               Find Report
             </Link>
-            <Button onClick={updateRefrence} disabled={loading}>
-              Reset Refrence
-            </Button>
+
             <Link
               className="btn btn-outline-primary"
               to="/dashboard/change-password"
-              style={{ marginLeft: "1rem" }}
+              style={{ marginLeft: "1rem", marginRight: "1rem" }}
             >
               Change Password
             </Link>
+            <Button onClick={showModal}>Reset Refrence</Button>
             <Button
               variant="primary"
               onClick={handleLogout}
@@ -95,6 +106,28 @@ export default function NavigationBar() {
           </Nav>
         </Container>
       </Navbar>
+
+      <Modal show={show} onHide={closeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reset Refrence</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you really want to reset refrence value to 0? This action can't be
+          reversed !
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={updateRefrence}
+            disabled={loading}
+          >
+            Reset Refrence
+          </Button>
+          <Button variant="primary" onClick={closeModal}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

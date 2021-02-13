@@ -1,5 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Alert,
+  Modal,
+} from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
 
 import { storage, db } from "../firebase";
@@ -72,13 +81,26 @@ function MakeReport() {
   const dateExaminedRef = useRef();
   const dateExpiryRef = useRef();
 
+  // States related to errors
+  const [uploadMsg, setUploadMsg] = useState("");
+  const [uploadError, setUploadError] = useState("");
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  // States related to data
   const [photoUrl, setPhotoUrl] = useState("");
-  const [photo, setPhoto] = useState();
+  const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState({});
   const [fetching, setFetching] = useState(true);
   const [edit, setEdit] = useState(false);
   const [pregnancy, setPregnancy] = useState("Not Applicable");
+
+  // States related to Modal
+  const [show, setShow] = useState(false);
+  const closeModal = () => setShow(false);
+  const showModal = () => setShow(true);
 
   function setPregnancyValue() {
     // console.log("outer => ", genderRef.current.value);
@@ -106,9 +128,23 @@ function MakeReport() {
   }
 
   function uploadFile() {
+    if (!photo) {
+      setUploadMsg("");
+      setUploadError("Please select a file");
+      return;
+    }
+
     setLoading(true);
     const date = new Date().toISOString();
     const name = photo.name + "_" + date;
+
+    var allowedExtensions = /(\.jpg|\.jpeg)$/i;
+    if (!allowedExtensions.exec(photo.name)) {
+      setUploadMsg("");
+      setUploadError("Please upload a .jpg file");
+      setLoading(false);
+      return;
+    }
 
     const uploadTask = storage.ref(`images/${name}`).put(photo);
     uploadTask.on(
@@ -116,6 +152,7 @@ function MakeReport() {
       (snapshot) => {},
       (error) => {
         console.log(error);
+        setUploadError(error);
       },
       () => {
         storage
@@ -125,6 +162,8 @@ function MakeReport() {
           .then((url) => {
             setPhotoUrl(url);
             setLoading(false);
+            setUploadError("");
+            setUploadMsg("Photo uploaded");
           });
       }
     );
@@ -233,12 +272,16 @@ function MakeReport() {
 
     try {
       await Promise.all([pdf, saveData]);
+      setError("");
+      setMessage("Report saved successfully");
+      showModal();
     } catch (err) {
       console.log(err);
+      setMessage("");
+      setError("An error occured ! Please try again");
     }
 
     setLoading(false);
-    history.push("/dashboard");
   }
 
   const location = useLocation();
@@ -295,7 +338,7 @@ function MakeReport() {
     }
 
     fetchData();
-  }, [location]);
+  }, []);
 
   return (
     <>
@@ -408,6 +451,15 @@ function MakeReport() {
                     >
                       Upload
                     </Button>
+                    <br />
+                    <div style={{ marginTop: "1rem" }}>
+                      {uploadError.length > 0 && (
+                        <Alert variant="danger">{uploadError}</Alert>
+                      )}
+                      {uploadMsg.length > 0 && (
+                        <Alert variant="success">{uploadMsg}</Alert>
+                      )}
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>
@@ -1059,7 +1111,11 @@ function MakeReport() {
                   </Card.Body>
                 </Card>
               </Col>
-              <Col></Col>
+              <Col>
+                <div>
+                  {error.length > 0 && <Alert variant="danger">{error}</Alert>}
+                </div>
+              </Col>
             </Row>
 
             <br />
@@ -1079,6 +1135,21 @@ function MakeReport() {
           <br />
         </Container>
       )}
+
+      <Modal show={show} onHide={closeModal} backdrop="static" keyboard={false}>
+        <Modal.Body>
+          {message.length > 0 && <Alert variant="success">{message}</Alert>}
+          <Button
+            variant="primary"
+            onClick={() => {
+              history.push("/dashboard");
+              closeModal();
+            }}
+          >
+            OK
+          </Button>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
