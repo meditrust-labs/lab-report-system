@@ -4,12 +4,12 @@ The task was to design a customized report management solution for a Pathology L
 
 ### Features -
 
-1. Secured with Firebase Authentication.
+1. It is secured with Firebase Authentication.
 2. Automatically manages refrence number of the reports.
 3. Generates the reports in the pdf format and saves the data in Firestore.
 4. Supports uploading candidates photos.
-5. Provides a search bar to easily search previous reports. Offers 5 filters for searching reports. e.g. Date Examined, Date Expiry, Lab Serial Number, Passport Number, Date of Birth.
-6. Easy to use interface for editing reports.
+5. Easy to use interface for finding and editing reports.
+6. Provides a search bar to easily search previous reports. Offers 5 filters for searching reports. e.g. Date Examined, Date Expiry, Lab Serial Number, Passport Number, Date of Birth.
 7. Reports automatically expires after 3 months of examined date.
 8. Provides a feature for changing or resetting password.
 
