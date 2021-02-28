@@ -10,6 +10,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
+import { parse, add, format } from "date-fns";
 
 import { storage, db } from "../firebase";
 import generatePdf from "../pdfLib";
@@ -96,11 +97,23 @@ function MakeReport() {
   const [fetching, setFetching] = useState(true);
   const [edit, setEdit] = useState(false);
   const [pregnancy, setPregnancy] = useState("Not Applicable");
+  const [expiryDate, setExpiryDate] = useState("");
 
   // States related to Modal
   const [show, setShow] = useState(false);
   const closeModal = () => setShow(false);
   const showModal = () => setShow(true);
+
+  function calculateExpiryDate() {
+    const dateString = dateExaminedRef.current.value;
+    const date = parse(dateString, "yyyy-MM-dd", new Date());
+
+    const after3Months = add(date, { months: 3 });
+
+    const formattedDate = format(after3Months, "yyyy-MM-dd");
+
+    setExpiryDate(formattedDate);
+  }
 
   function setPregnancyValue() {
     // console.log("outer => ", genderRef.current.value);
@@ -170,14 +183,10 @@ function MakeReport() {
   }
 
   async function updateReport(formData, candidatePhoto) {
-    try {
-      await db
-        .collection("reports")
-        .doc(current.labSrNo)
-        .update({ ...formData, candidatePhoto });
-    } catch (err) {
-      console.log(err);
-    }
+    await db
+      .collection("reports")
+      .doc(current.labSrNo)
+      .update({ ...formData, candidatePhoto });
   }
 
   async function saveReport(formData, candidatePhoto) {
@@ -193,11 +202,8 @@ function MakeReport() {
         lab: current.lab + 1,
         refrence: current.refrence + 1,
       });
-    try {
-      await Promise.all([saveData, updateCurrent]);
-    } catch (err) {
-      console.log(err);
-    }
+
+    await Promise.all([saveData, updateCurrent]);
   }
 
   const history = useHistory();
@@ -310,6 +316,7 @@ function MakeReport() {
             let data = doc.data();
             data["dateExamined"] = convertDate(data["dateExamined"]);
             data["dateExpiry"] = convertDate(data["dateExpiry"]);
+            setExpiryDate(data["dateExpiry"]);
             data["dob"] = convertDate(data["dob"]);
             data["doi"] = convertDate(data["doi"]);
 
@@ -418,6 +425,7 @@ function MakeReport() {
                         type="date"
                         ref={dateExaminedRef}
                         defaultValue={edit ? current.dateExamined : ``}
+                        onChange={calculateExpiryDate}
                         required
                       />
                     </Form.Group>
@@ -426,8 +434,9 @@ function MakeReport() {
                       <Form.Control
                         type="date"
                         ref={dateExpiryRef}
-                        defaultValue={edit ? current.dateExpiry : ``}
-                        required
+                        value={expiryDate}
+                        onChange={() => {}}
+                        disabled
                       />
                     </Form.Group>
                   </Card.Body>
@@ -555,11 +564,8 @@ function MakeReport() {
                         required
                       >
                         <option value="">-- Select --</option>
-                        <option value="Single"> Single </option>
                         <option value="Married"> Married </option>
-                        <option value="Divorced"> Divorced </option>
-                        <option value="Seperated"> Seperated </option>
-                        <option value="Widow (er)"> Widow (er) </option>
+                        <option value="Not Married"> Not Married </option>
                       </Form.Control>
                     </Form.Group>
                     <Form.Group id="date-of-birth">

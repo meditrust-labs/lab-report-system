@@ -11,7 +11,7 @@ The task was to design a customized report management solution for a Pathology L
 5. Easy to use interface for finding and editing reports.
 6. Provides a search bar to easily search previous reports. Offers 5 filters for searching reports. e.g. Date Examined, Date Expiry, Lab Serial Number, Passport Number, Date of Birth.
 7. Reports automatically expires after 3 months of examined date.
-8. Provides a feature for changing or resetting password.
+8. Provides features for changing or resetting password.
 
 ## This app is deployed on Vercel.
 
@@ -31,3 +31,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+## This project is open to contributions
+
+if you want to report any bug or have a feature request, feel free to open an issue.

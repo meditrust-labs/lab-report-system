@@ -7,15 +7,15 @@ import { db } from "../firebase";
 function FindReport() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState([
+
+  const options = [
     "labSrNo",
     "dateExamined",
     "dateExpiry",
     "fullName",
     "dob",
     "passport",
-  ]);
-
+  ];
   const searchRef = useRef();
   const selectRef = useRef();
 
@@ -23,20 +23,33 @@ function FindReport() {
     e.preventDefault();
     setLoading(true);
 
-    let value = searchRef.current.value;
+    let value = searchRef.current.value.toUpperCase();
     const idx = selectRef.current.options.selectedIndex;
     const option = options[idx];
 
     const reportsRef = db.collection("reports");
+    let querySnapshot;
+
     try {
-      const querySnapshot = await reportsRef.where(option, "==", value).get();
-      if (!querySnapshot.empty) {
-        setData(querySnapshot.docs);
+      if (value.length == 0) {
+        querySnapshot = await reportsRef
+          .orderBy("labSrNo", "desc")
+          .limit(15)
+          .get();
+
+        // console.log("0 length", querySnapshot);
       } else {
-        setData([]);
+        querySnapshot = await reportsRef.where(option, "==", value).get();
+        // console.log("value", value, querySnapshot);
       }
     } catch (err) {
       console.log(err);
+    }
+
+    if (!querySnapshot.empty) {
+      setData(querySnapshot.docs);
+    } else {
+      setData([]);
     }
 
     setLoading(false);
@@ -86,7 +99,6 @@ function FindReport() {
                 type="text"
                 placeholder="search reports"
                 ref={searchRef}
-                required
               />
             </Form.Group>
           </Col>

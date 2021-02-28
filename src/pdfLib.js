@@ -1,18 +1,48 @@
 import { PDFDocument } from "pdf-lib";
 
+import { BASE_URL, CACHE_NAME } from "./config";
+
+async function fetchAndCacheData(url) {
+  let cache;
+  return caches
+    .open(CACHE_NAME)
+    .then((cacheStorage) => {
+      cache = cacheStorage;
+      return cacheStorage.add(url);
+    })
+    .then((someReponse) => {
+      return cache.match(url);
+    })
+    .then((cachedResponse) => cachedResponse);
+}
+
+async function fetchCachedData(url) {
+  return caches
+    .open(CACHE_NAME)
+    .then((cacheStorage) => {
+      return cacheStorage.match(url);
+    })
+    .then((cachedResponse) => {
+      if (!cachedResponse || !cachedResponse.ok) {
+        console.log("fetch and save data");
+        return fetchAndCacheData(url);
+      }
+      return cachedResponse;
+    })
+    .catch((err) => console.log(err));
+}
+
 async function generatePDF(formData, candidatePhoto, edit) {
-  const formUrl =
-    "https://mohdimran001.github.io/lab-report-management-system/public/report.pdf";
+  const formUrl = BASE_URL + "/report.pdf";
+  const signUrl = BASE_URL + "/sign.jpeg";
+  const stampUrl = BASE_URL + "/stamp.png";
   const photoUrl = candidatePhoto;
 
-  // // Fetch the PDF with form fields
-  // const formPdfBytes = fetch(formUrl).then((res) => res.arrayBuffer());
-  // // Fetch the photo
-  // const photoBytes = fetch(photoUrl).then((res) => res.arrayBuffer());
-
-  const [formPdfBytes, photoBytes] = await Promise.all([
-    fetch(formUrl).then((res) => res.arrayBuffer()),
+  const [formPdfBytes, photoBytes, signBytes, stampBytes] = await Promise.all([
+    fetchCachedData(formUrl).then((res) => res.arrayBuffer()),
     fetch(photoUrl).then((res) => res.arrayBuffer()),
+    fetchCachedData(signUrl).then((res) => res.arrayBuffer()),
+    fetchCachedData(stampUrl).then((res) => res.arrayBuffer()),
   ]);
 
   // Load a PDF with form fields
@@ -37,15 +67,15 @@ async function generatePDF(formData, candidatePhoto, edit) {
   photoField.setImage(photo);
 
   if (edit) {
-    // attach signatue and doctor's name
-    const signUrl =
-      "https://mohdimran001.github.io/lab-report-management-system/public/sign.jpeg";
-    const signBytes = await fetch(signUrl).then((res) => res.arrayBuffer());
-
     // Embed the sign
     const sign = await pdfDoc.embedJpg(signBytes);
     const signField = form.getButton("signature");
     signField.setImage(sign);
+
+    // Embed the stamp
+    const stamp = await pdfDoc.embedPng(stampBytes);
+    const stampField = form.getButton("stamp");
+    stampField.setImage(stamp);
 
     form.getTextField("dr_name").setText("DR. K.D. GANDHI");
     form.getTextField("dr_degree").setText("MBBS, MD (Micro)");
