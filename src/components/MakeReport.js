@@ -284,7 +284,7 @@ function MakeReport() {
     } catch (err) {
       console.log(err);
       setMessage("");
-      setError("An error occured ! Please try again");
+      setError(`${err}`);
     }
 
     setLoading(false);

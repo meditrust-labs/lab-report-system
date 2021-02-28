@@ -18,7 +18,7 @@ function App() {
       if (keys.length < 3) {
         await cacheStorage.addAll([
           BASE_URL + "/report.pdf",
-          BASE_URL + "/sign.jpeg",
+          BASE_URL + "/edit-report.pdf",
           BASE_URL + "/stamp.png",
         ]);
 

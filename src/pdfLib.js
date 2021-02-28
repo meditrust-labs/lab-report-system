@@ -36,15 +36,17 @@ async function generatePDF(formData, candidatePhoto, edit) {
   const formUrl = edit
     ? BASE_URL + "/edit-report.pdf"
     : BASE_URL + "/report.pdf";
-  const signUrl = BASE_URL + "/sign.jpeg";
+  // const signUrl = BASE_URL + "/sign.jpeg";
   const stampUrl = BASE_URL + "/stamp.png";
   const photoUrl = candidatePhoto;
 
-  const [formPdfBytes, photoBytes, signBytes, stampBytes] = await Promise.all([
+  console.log(formUrl);
+
+  const [formPdfBytes, photoBytes, stampBytes] = await Promise.all([
     fetchCachedData(formUrl).then((res) => res.arrayBuffer()),
     fetch(photoUrl).then((res) => res.arrayBuffer()),
-    fetchCachedData(signUrl).then((res) => res.arrayBuffer()),
     fetchCachedData(stampUrl).then((res) => res.arrayBuffer()),
+    // fetchCachedData(signUrl).then((res) => res.arrayBuffer()),
   ]);
 
   // Load a PDF with form fields
@@ -68,21 +70,21 @@ async function generatePDF(formData, candidatePhoto, edit) {
   const photoField = form.getButton("photo");
   photoField.setImage(photo);
 
-  // if (edit) {
-  //   // Embed the sign
-  //   const sign = await pdfDoc.embedJpg(signBytes);
-  //   const signField = form.getButton("signature");
-  //   signField.setImage(sign);
+  if (edit) {
+    // Embed the sign
+    // const sign = await pdfDoc.embedJpg(signBytes);
+    // const signField = form.getButton("signature");
+    // signField.setImage(sign);
 
-  //   // Embed the stamp
-  //   const stamp = await pdfDoc.embedPng(stampBytes);
-  //   const stampField = form.getButton("stamp");
-  //   stampField.setImage(stamp);
+    // Embed the stamp
+    const stamp = await pdfDoc.embedPng(stampBytes);
+    const stampField = form.getButton("stamp");
+    stampField.setImage(stamp);
 
-  //   form.getTextField("dr_name").setText("DR. K.D. GANDHI");
-  //   form.getTextField("dr_degree").setText("MBBS, MD (Micro)");
-  //   form.getTextField("dr_position").setText("(Consultant Pathologist)");
-  // }
+    // form.getTextField("dr_name").setText("DR. K.D. GANDHI");
+    // form.getTextField("dr_degree").setText("MBBS, MD (Micro)");
+    // form.getTextField("dr_position").setText("(Consultant Pathologist)");
+  }
 
   form.flatten();
 
