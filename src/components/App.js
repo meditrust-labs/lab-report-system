@@ -51,7 +51,7 @@ function App() {
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <Route path="/reset-password" component={ResetPassword} />
               <Route path="/reset-password" component={ResetPassword} />
-              <Route path="/signup" component={Signup} />
+              {/* <Route path="/signup" component={Signup} /> */}
             </Switch>
           </AuthProvider>
         </Router>
