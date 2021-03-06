@@ -7,6 +7,7 @@ import { db } from "../firebase";
 function FindReport() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   const options = [
     "labSrNo",
@@ -56,24 +57,35 @@ function FindReport() {
     return;
   }
 
-  useEffect(() => {
-    async function fetchReports() {
-      setLoading(true);
-      try {
-        const snapshot = await db
-          .collection("reports")
-          .orderBy("labSrNo", "desc")
-          .limit(15)
-          .get();
-        setData(snapshot.docs);
-      } catch (err) {
-        console.log(err);
-      }
-      setLoading(false);
+  async function fetchReports() {
+    setLoading(true);
+    try {
+      const snapshot = await db
+        .collection("reports")
+        .orderBy("labSrNo", "desc")
+        .limit(15)
+        .get();
+      setData(snapshot.docs);
+    } catch (err) {
+      console.log(err);
     }
+    setLoading(false);
+  }
 
+  useEffect(() => {
     fetchReports();
   }, []);
+
+  const deleteReport = async (id) => {
+    setRemoving(true);
+    try {
+      await db.collection("reports").doc(id).delete();
+    } catch (err) {
+      console.log(err);
+    }
+    setRemoving(false);
+    await fetchReports();
+  };
 
   return (
     <Container className="pt-4 text-center">
@@ -141,6 +153,7 @@ function FindReport() {
                   <td> Date Of Birth </td>
                   <td> Passport No </td>
                   <td> Edit </td>
+                  <td> Delete </td>
                 </tr>
               </thead>
               <tbody>
@@ -159,6 +172,15 @@ function FindReport() {
                         >
                           Edit
                         </Link>
+                      </td>
+                      <td>
+                        <Button
+                          variant="danger"
+                          onClick={() => deleteReport(doc.id)}
+                          disabled={removing}
+                        >
+                          Delete
+                        </Button>
                       </td>
                     </tr>
                   );

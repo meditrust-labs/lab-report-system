@@ -17,8 +17,8 @@ The task was to design a customized report management solution for a Pathology L
 
 ## For testing on live url
 
-use email - test@email.com
-use password - test123
+use email - test@test.com
+use password - abc123
 
 ## To run locally
 

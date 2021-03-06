@@ -565,7 +565,7 @@ function MakeReport() {
                       >
                         <option value="">-- Select --</option>
                         <option value="Married"> Married </option>
-                        <option value="Not Married"> Not Married </option>
+                        <option value="Unmarried"> Unmarried </option>
                       </Form.Control>
                     </Form.Group>
                     <Form.Group id="date-of-birth">
@@ -768,10 +768,17 @@ function MakeReport() {
                     <Form.Group id="vdrl">
                       <Form.Label>VDRL/TPHA</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={VDRLorTPHA_Ref}
-                        defaultValue={edit ? current.VDRLorTPHA : ``}
-                      />
+                        defaultValue={
+                          edit ? current.VDRLorTPHA : `Non-Reactive`
+                        }
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Reactive">Reactive</option>
+                        <option value="Non-Reactive">Non-Reactive</option>
+                      </Form.Control>
                     </Form.Group>
                     {/* <Form.Group id="tpha">
                       <Form.Label>TPHA</Form.Label>
@@ -838,7 +845,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={sugarRef}
-                        defaultValue={edit ? current.sugar : `nil`}
+                        defaultValue={edit ? current.sugar : `NIL`}
                       />
                     </Form.Group>
                     <Form.Group id="albumin">
@@ -846,7 +853,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={albuminRef}
-                        defaultValue={edit ? current.albumin : `nil`}
+                        defaultValue={edit ? current.albumin : `NIL`}
                       />
                     </Form.Group>
                     <Form.Group id="urine-bilharziasis">
@@ -854,7 +861,7 @@ function MakeReport() {
                       <Form.Control
                         type="text"
                         ref={urineBilharziasisRef}
-                        defaultValue={edit ? current.urineBilharziasis : `nil`}
+                        defaultValue={edit ? current.urineBilharziasis : `NIL`}
                       />
                     </Form.Group>
                     <Form.Group id="urine-others">
@@ -894,12 +901,17 @@ function MakeReport() {
                     <Form.Group id="micro-filaria">
                       <Form.Label>Micro Filaria</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={microFilariaRef}
                         defaultValue={
-                          edit ? current.microFilaria : `Non Reactive`
+                          edit ? current.microFilaria : `Non-Reactive`
                         }
-                      />
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Reactive">Reactive</option>
+                        <option value="Non-Reactive">Non-Reactive</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="blood-group">
                       <Form.Label>Blood Group</Form.Label>
@@ -984,26 +996,41 @@ function MakeReport() {
                     <Form.Group id="hiv">
                       <Form.Label>HIV</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={hivRef}
-                        defaultValue={edit ? current.hiv : `Non Reactive`}
-                      />
+                        defaultValue={edit ? current.hiv : `Non-Reactive`}
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Reactive">Reactive</option>
+                        <option value="Non-Reactive">Non-Reactive</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="hbsag">
                       <Form.Label>HBsAg</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={hbsagRef}
-                        defaultValue={edit ? current.hbsag : `Non Reactive`}
-                      />
+                        defaultValue={edit ? current.hbsag : `Non-Reactive`}
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Reactive">Reactive</option>
+                        <option value="Non-Reactive">Non-Reactive</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="anti-hcv">
                       <Form.Label>Anti HCV</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         ref={antiHCVRef}
-                        defaultValue={edit ? current.antiHCV : `Non Reactive`}
-                      />
+                        defaultValue={edit ? current.antiHCV : `Non-Reactive`}
+                        custom
+                      >
+                        <option value="">-- Select --</option>
+                        <option value="Reactive">Reactive</option>
+                        <option value="Non-Reactive">Non-Reactive</option>
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group id="lft">
                       <Form.Label>L.F.T.</Form.Label>
