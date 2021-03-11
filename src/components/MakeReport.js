@@ -91,6 +91,7 @@ function MakeReport() {
 
   // States related to data
   const [photoUrl, setPhotoUrl] = useState("");
+  const [photoName, setPhotoName] = useState("");
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState({});
@@ -154,7 +155,7 @@ function MakeReport() {
     var allowedExtensions = /(\.jpg|\.jpeg)$/i;
     if (!allowedExtensions.exec(photo.name)) {
       setUploadMsg("");
-      setUploadError("Please upload a .jpg file");
+      setUploadError("Please upload a .jpg or .jpeg file");
       setLoading(false);
       return;
     }
@@ -173,6 +174,7 @@ function MakeReport() {
           .child(name)
           .getDownloadURL()
           .then((url) => {
+            setPhotoName(name);
             setPhotoUrl(url);
             setLoading(false);
             setUploadError("");
@@ -182,18 +184,15 @@ function MakeReport() {
     );
   }
 
-  async function updateReport(formData, candidatePhoto) {
-    await db
-      .collection("reports")
-      .doc(current.labSrNo)
-      .update({ ...formData, candidatePhoto });
+  async function updateReport(formData) {
+    await db.collection("reports").doc(current.labSrNo).update(formData);
   }
 
-  async function saveReport(formData, candidatePhoto) {
+  async function saveReport(formData) {
     const saveData = db
       .collection("reports")
       .doc(`EMPTY_${current.lab + 1}`)
-      .set({ ...formData, candidatePhoto });
+      .set(formData);
 
     const updateCurrent = db
       .collection("current")
@@ -265,19 +264,17 @@ function MakeReport() {
       remarks: remarksRef.current.value,
       fit: fitRef.current.value,
       covid: covidRef.current.value,
+      photoName: photoName,
+      candidatePhoto: photoUrl,
     };
-    const candidatePhoto = photoUrl;
-
-    const pdf = generatePdf(formData, candidatePhoto, edit);
-    let saveData;
-    if (edit) {
-      saveData = updateReport(formData, candidatePhoto);
-    } else {
-      saveData = saveReport(formData, candidatePhoto);
-    }
 
     try {
-      await Promise.all([pdf, saveData]);
+      await generatePdf(formData, edit);
+      if (edit) {
+        await updateReport(formData);
+      } else {
+        await saveReport(formData);
+      }
       setError("");
       setMessage("Report saved successfully");
       showModal();
