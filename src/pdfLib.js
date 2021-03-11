@@ -32,15 +32,15 @@ async function fetchCachedData(url) {
     .catch((err) => console.log(err));
 }
 
-async function generatePDF(formData, candidatePhoto, edit) {
+async function generatePDF(formData, edit) {
   const formUrl = edit
     ? BASE_URL + "/edit-report.pdf"
     : BASE_URL + "/report.pdf";
   // const signUrl = BASE_URL + "/sign.jpeg";
   const stampUrl = BASE_URL + "/stamp.png";
-  const photoUrl = candidatePhoto;
+  const photoUrl = formData.candidatePhoto;
 
-  console.log(formUrl);
+  // console.log(formUrl);
 
   const [formPdfBytes, photoBytes, stampBytes] = await Promise.all([
     fetchCachedData(formUrl).then((res) => res.arrayBuffer()),
@@ -60,6 +60,8 @@ async function generatePDF(formData, candidatePhoto, edit) {
 
   // set text fields
   Object.keys(formData).map((key, index) => {
+    if (key === "photoName" || key === "candidatePhoto") return index;
+
     const value = formData[key];
     const field = form.getTextField(key);
     field.setText(value);

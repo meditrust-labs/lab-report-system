@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 
 function FindReport() {
   const [data, setData] = useState([]);
@@ -79,7 +79,13 @@ function FindReport() {
   const deleteReport = async (id) => {
     setRemoving(true);
     try {
-      await db.collection("reports").doc(id).delete();
+      const photoName = data.find((report) => report.id === id).data()
+        .photoName;
+
+      const deleteReport = db.collection("reports").doc(id).delete();
+      const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
+
+      await Promise.all([deleteReport, deletePhoto]);
     } catch (err) {
       console.log(err);
     }
