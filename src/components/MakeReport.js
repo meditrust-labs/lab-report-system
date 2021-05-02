@@ -191,7 +191,7 @@ function MakeReport() {
   async function saveReport(formData) {
     const saveData = db
       .collection("reports")
-      .doc(`EMPTY_${current.lab + 1}`)
+      .doc(`MT_${current.lab + 1}`)
       .set(formData);
 
     const updateCurrent = db
@@ -207,6 +207,7 @@ function MakeReport() {
 
   const history = useHistory();
   async function generateReport(e) {
+    console.log(heightRef.current.value, weightRef.current.value)
     e.preventDefault();
     setLoading(true);
     const formData = {
@@ -217,8 +218,8 @@ function MakeReport() {
       fullName: fullNameRef.current.value.toUpperCase(),
       age: ageRef.current.value,
       gender: genderRef.current.value,
-      height: heightRef.current.value + " cm",
-      weight: weightRef.current.value + " kg",
+      height: heightRef.current.value.length > 0 ? heightRef.current.value + " cm" : "",
+      weight: weightRef.current.value.length > 0 ? weightRef.current.value + " kg" : "",
       maritalStatus: maritalStatusRef.current.value,
       dob: convertDate(dobRef.current.value),
       nationality: nationalityRef.current.value,
@@ -376,7 +377,7 @@ function MakeReport() {
                         ref={labSrNoRef}
                         disabled={true}
                         value={
-                          edit ? current.labSrNo : `EMPTY_${current.lab + 1}`
+                          edit ? current.labSrNo : `MT_${current.lab + 1}`
                         }
                       />
                     </Form.Group>
@@ -395,7 +396,7 @@ function MakeReport() {
                         value={
                           edit
                             ? current.refrenceNo
-                            : `EMPTY_${current.refrence + 1}`
+                            : `MT_${current.refrence + 1}`
                         }
                       />
                     </Form.Group>
@@ -529,7 +530,6 @@ function MakeReport() {
                         type="text"
                         ref={heightRef}
                         defaultValue={edit ? current.height : ``}
-                        required
                         style={{ display: "inline" }}
                       />
                       <span style={{ marginLeft: "-4rem" }}>cm</span>
@@ -546,7 +546,6 @@ function MakeReport() {
                         type="text"
                         ref={weightRef}
                         defaultValue={edit ? current.weight : ``}
-                        required
                         style={{ display: "inline" }}
                       />
                       <span style={{ marginLeft: "-4rem" }}>Kg</span>
