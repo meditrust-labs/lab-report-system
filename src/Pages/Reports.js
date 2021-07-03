@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { db, storage } from "../firebase";
 
-function FindReport() {
+function Reports() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
@@ -34,7 +34,7 @@ function FindReport() {
     try {
       if (value.length == 0) {
         querySnapshot = await reportsRef
-          .orderBy("labSrNo", "desc")
+          .orderBy("dateExamined", "desc")
           .limit(15)
           .get();
 
@@ -62,7 +62,7 @@ function FindReport() {
     try {
       const snapshot = await db
         .collection("reports")
-        .orderBy("labSrNo", "desc")
+        .orderBy("dateExamined", "desc")
         .limit(15)
         .get();
       setData(snapshot.docs);
@@ -142,7 +142,7 @@ function FindReport() {
       {loading && (
         <Row>
           <Col className="text-center">
-            <img src="/830.gif" alt="loader" />
+            <img src="/assets/images/loader.gif" alt="loader" />
           </Col>
         </Row>
       )}
@@ -152,7 +152,7 @@ function FindReport() {
             <Table striped bordered hover>
               <thead style={{ fontWeight: "bold" }}>
                 <tr>
-                  <td>Lab Sr No</td>
+                  <td> Lab Sr No </td>
                   <td> Full Name </td>
                   <td> Date Examined </td>
                   <td> Date Expiry </td>
@@ -174,7 +174,7 @@ function FindReport() {
                       <td>{doc.data().passport}</td>
                       <td>
                         <Link
-                          to={`/dashboard/report?edit=${doc.data().labSrNo}`}
+                          to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
                         >
                           Edit
                         </Link>
@@ -206,4 +206,4 @@ function FindReport() {
     </Container>
   );
 }
-export default FindReport;
+export default Reports;

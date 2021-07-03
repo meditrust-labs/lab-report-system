@@ -10,12 +10,12 @@ import {
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { parse, add, format } from "date-fns";
+import { parse, add, format, sub } from "date-fns";
 
 import { storage, db } from "../firebase";
 import generatePdf from "../pdfLib";
 
-function MakeReport() {
+function CreateReport() {
   const fullNameRef = useRef();
   const ageRef = useRef();
   const genderRef = useRef();
@@ -109,9 +109,9 @@ function MakeReport() {
     const dateString = dateExaminedRef.current.value;
     const date = parse(dateString, "yyyy-MM-dd", new Date());
 
-    const after3Months = add(date, { months: 3 });
-
-    const formattedDate = format(after3Months, "yyyy-MM-dd");
+    let expiryDate = add(date, { months: 3 });
+    expiryDate = sub(expiryDate, { days: 1 });
+    const formattedDate = format(expiryDate, "yyyy-MM-dd");
 
     setExpiryDate(formattedDate);
   }
@@ -206,9 +206,8 @@ function MakeReport() {
   }
 
   const history = useHistory();
-  async function generateReport(e) {
-    console.log(heightRef.current.value, weightRef.current.value)
-    e.preventDefault();
+  async function generateReport(flag) {
+    // e.preventDefault();
     setLoading(true);
     const formData = {
       labSrNo: labSrNoRef.current.value,
@@ -270,7 +269,7 @@ function MakeReport() {
     };
 
     try {
-      await generatePdf(formData, edit);
+      await generatePdf(formData, flag);
       if (edit) {
         await updateReport(formData);
       } else {
@@ -334,7 +333,7 @@ function MakeReport() {
           } else {
             alert("no such report found");
             console.log("no such doc");
-            history.push("/dashboard/search");
+            history.push("/dashboard/reports");
           }
         } catch (err) {
           console.log(err);
@@ -349,7 +348,7 @@ function MakeReport() {
     <>
       {fetching && (
         <Container className="pt-4 text-center">
-          <img src="/830.gif" alt="loader" />
+          <img src="/assets/images/loader.gif" alt="loader" />
         </Container>
       )}
       {!fetching && (
@@ -357,13 +356,13 @@ function MakeReport() {
           <Row className="fill-report-icon text-center">
             <Col>
               <img
-                src="/fill-report.png"
+                src="/assets/images/fill-report.png"
                 alt="fill-report-icon"
                 style={{ width: "5rem" }}
               />
             </Col>
           </Row>
-          <Form onSubmit={generateReport}>
+          <Form onSubmit={(e) => {e.preventDefault()}}>
             <br />
             <br />
             <Row>
@@ -1151,13 +1150,23 @@ function MakeReport() {
             <br />
             <Button
               disabled={loading}
-              type="submit"
+              type="button"
               className="px-4 py-2"
               style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
+              onClick={() => generateReport(false)}
             >
-              GENERATE REPORT
+              CREATE TEST REPORT
             </Button>
-            {loading && <img src="/830.gif" alt="loader" className="ml-4" />}
+            <Button
+              disabled={loading}
+              type="button"
+              className="px-4 py-2 ml-4"
+              style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
+              onClick={() => generateReport(true)}
+            >
+              GENERATE FINAL REPORT
+            </Button>
+            {loading && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
           </Form>
           <br />
           <br />
@@ -1183,4 +1192,4 @@ function MakeReport() {
   );
 }
 
-export default MakeReport;
+export default CreateReport;

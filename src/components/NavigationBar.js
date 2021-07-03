@@ -46,7 +46,7 @@ export default function NavigationBar() {
           <Navbar.Brand>
             <img
               alt=""
-              src="/logo.png"
+              src="/assets/images/logo.png"
               width="30"
               height="30"
               className="d-inline-block align-top"
@@ -70,10 +70,10 @@ export default function NavigationBar() {
               style={{ marginRight: "1rem" }}
               onClick={() => {
                 if (window.location.href.includes("edit")) {
-                  history.push("/dashboard/report");
+                  history.push("/dashboard/create-report");
                   window.location.reload();
                 } else {
-                  history.push("/dashboard/report");
+                  history.push("/dashboard/create-report");
                 }
               }}
             >
@@ -82,7 +82,7 @@ export default function NavigationBar() {
 
             <Link
               className="btn btn-dark"
-              to="/dashboard/search"
+              to="/dashboard/reports"
               style={{ marginRight: "6rem" }}
             >
               Find Report
