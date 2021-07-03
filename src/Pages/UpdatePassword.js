@@ -18,13 +18,15 @@ function UpdatePassword() {
     e.preventDefault();
 
     if (passwordRef.current.value.length > 0) {
-      //
+
       try {
         setError("");
         setMessage("");
         setLoading(true);
+
         await updatePassword(passwordRef.current.value);
         setMessage("Password changed successfully ! Please login again");
+
         setTimeout(async () => {
           await logout();
           history.push("/");
