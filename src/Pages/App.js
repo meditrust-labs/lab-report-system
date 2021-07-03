@@ -4,9 +4,12 @@ import { Container } from "react-bootstrap";
 
 import { AuthProvider } from "../contexts/AuthContext";
 
+import { PrivateRoute } from "../components/index";
+
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import ResetPassword from "./ResetPassword";
+
 
 import { 
   TEST_REPORT_URL, 
