@@ -10,10 +10,10 @@ import {
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { parse, add, format, sub } from "date-fns";
 
-import { storage, db } from "../firebase";
-import generatePdf from "../pdfLib";
+import { storage, db } from "../firebase.config";
+import generatePdf from "../utils/pdfLib";
+import { getExpiryDate, convertDate } from "../utils/date.helper"
 
 function CreateReport() {
   const fullNameRef = useRef();
@@ -107,32 +107,16 @@ function CreateReport() {
 
   function calculateExpiryDate() {
     const dateString = dateExaminedRef.current.value;
-    const date = parse(dateString, "yyyy-MM-dd", new Date());
-
-    let expiryDate = add(date, { months: 3 });
-    expiryDate = sub(expiryDate, { days: 1 });
-    const formattedDate = format(expiryDate, "yyyy-MM-dd");
-
-    setExpiryDate(formattedDate);
+    const expiryDate = getExpiryDate(dateString);
+    setExpiryDate(expiryDate);
   }
 
   function setPregnancyValue() {
-    // console.log("outer => ", genderRef.current.value);
     if (genderRef.current.value === "Female") {
-      // console.log("applicable");
       setPregnancy("Applicable");
     } else {
       setPregnancy("Not Applicable");
     }
-  }
-
-  function convertDate(value) {
-    let date = value.split("-");
-    let temp = date[0];
-    date[0] = date[2];
-    date[2] = temp;
-    date = date.join("-");
-    return date;
   }
 
   function handleChange(e) {

@@ -5,7 +5,7 @@ import {
   FINAL_REPORT_URL, 
   STAMP_URL, 
   CACHE_NAME 
-} from "./Utils/config";
+} from "../constants";
 
 async function fetchAndCacheData(url) {
   let cache;

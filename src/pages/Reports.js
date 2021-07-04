@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { db, storage } from "../firebase";
+import { db, storage } from "../firebase.config";
 
 function Reports() {
   const [data, setData] = useState([]);

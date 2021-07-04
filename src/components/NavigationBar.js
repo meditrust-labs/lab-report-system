@@ -3,7 +3,7 @@ import { Navbar, Nav, Button, Container, Modal } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
-import { db } from "../firebase";
+import { db } from "../firebase.config";
 
 export default function NavigationBar() {
   const { logout } = useAuth();
