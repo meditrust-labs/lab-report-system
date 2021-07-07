@@ -13,7 +13,8 @@ import { useLocation, useHistory } from "react-router-dom";
 
 import { storage, db } from "../firebase.config";
 import generatePdf from "../utils/pdfLib";
-import { getExpiryDate, convertDate } from "../utils/date.helper"
+import { getExpiryDate, convertDate } from "../utils/date.helper";
+import { ALLOWED_EXTNS } from '../constants';
 
 function CreateReport() {
   const fullNameRef = useRef();
@@ -131,18 +132,15 @@ function CreateReport() {
       setUploadError("Please select a file");
       return;
     }
+    if (!ALLOWED_EXTNS.exec(photo.name)) {
+      setUploadMsg("");
+      setUploadError("Please upload a .jpg or .jpeg file");
+      return;
+    }
 
     setLoading(true);
     const date = new Date().toISOString();
     const name = photo.name + "_" + date;
-
-    var allowedExtensions = /(\.jpg|\.jpeg)$/i;
-    if (!allowedExtensions.exec(photo.name)) {
-      setUploadMsg("");
-      setUploadError("Please upload a .jpg or .jpeg file");
-      setLoading(false);
-      return;
-    }
 
     const uploadTask = storage.ref(`images/${name}`).put(photo);
     uploadTask.on(
@@ -192,6 +190,7 @@ function CreateReport() {
   const history = useHistory();
   async function generateReport(flag) {
     // e.preventDefault();
+    console.log(photoName);
     setLoading(true);
     const formData = {
       labSrNo: labSrNoRef.current.value,
@@ -313,6 +312,8 @@ function CreateReport() {
             setCurrent(data);
             setEdit(true);
             setPhotoUrl(doc.data().candidatePhoto);
+            console.log(doc.data());
+            setPhotoName(doc.data().photoName);
             setFetching(false);
           } else {
             alert("no such report found");
