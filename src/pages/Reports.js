@@ -20,8 +20,8 @@ function Reports() {
     const value = searchRef.current.value.toUpperCase();
     const option = selectRef.current.value;
 
-    const api = new ReportsApi();
-    const result = await api.find(option, value);
+    // const api = new ReportsApi();
+    const result = await ReportsApi.find(option, value);
 
     if (!result.empty) {
       setData(result.docs);
@@ -41,8 +41,8 @@ function Reports() {
                       .data()
                       .photoName;
 
-    const api = new ReportsApi();
-    await api.delete(photoName, id);
+    // const api = new ReportsApi();
+    await ReportsApi.delete(photoName, id);
 
     const newData = data.filter((report) =>  report.id !== id);
     
@@ -54,8 +54,8 @@ function Reports() {
     async function fetchReports() {
       setLoading(true);
 
-      const api = new ReportsApi();
-      const data = await api.get();
+      // const api = new ReportsApi();
+      const data = await ReportsApi.get();
       
       setData(data.docs);
       setLoading(false);

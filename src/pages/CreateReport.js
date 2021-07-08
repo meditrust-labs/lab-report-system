@@ -11,10 +11,9 @@ import {
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
 
-import { storage, db } from "../firebase.config";
+import ReportsApi from '../services/firebase.service'
 import generatePdf from "../utils/pdfLib";
 import { getExpiryDate, convertDate } from "../utils/date.helper";
-import { ALLOWED_EXTNS } from '../constants';
 
 function CreateReport() {
   const fullNameRef = useRef();
@@ -126,71 +125,23 @@ function CreateReport() {
     }
   }
 
-  function uploadFile() {
-    if (!photo) {
-      setUploadMsg("");
-      setUploadError("Please select a file");
-      return;
-    }
-    if (!ALLOWED_EXTNS.exec(photo.name)) {
-      setUploadMsg("");
-      setUploadError("Please upload a .jpg or .jpeg file");
-      return;
-    }
-
+  async function uploadFile() {
     setLoading(true);
-    const date = new Date().toISOString();
-    const name = photo.name + "_" + date;
-
-    const uploadTask = storage.ref(`images/${name}`).put(photo);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {},
-      (error) => {
-        console.log(error);
-        setUploadError(error);
-      },
-      () => {
-        storage
-          .ref("images")
-          .child(name)
-          .getDownloadURL()
-          .then((url) => {
-            setPhotoName(name);
-            setPhotoUrl(url);
-            setLoading(false);
-            setUploadError("");
-            setUploadMsg("Photo uploaded");
-          });
-      }
-    );
-  }
-
-  async function updateReport(formData) {
-    await db.collection("reports").doc(current.labSrNo).update(formData);
-  }
-
-  async function saveReport(formData) {
-    const saveData = db
-      .collection("reports")
-      .doc(`MT_${current.lab + 1}`)
-      .set(formData);
-
-    const updateCurrent = db
-      .collection("current")
-      .doc(current.id)
-      .update({
-        lab: current.lab + 1,
-        refrence: current.refrence + 1,
-      });
-
-    await Promise.all([saveData, updateCurrent]);
+    try { 
+      const {url, name} = await ReportsApi.upload(photo);
+      setPhotoName(name);
+      setPhotoUrl(url);
+      setUploadError("");
+      setUploadMsg("Photo uploaded");
+    } catch (err) {
+      setUploadMsg("");
+      setUploadError(err);
+    }
+    setLoading(false);
   }
 
   const history = useHistory();
   async function generateReport(flag) {
-    // e.preventDefault();
-    console.log(photoName);
     setLoading(true);
     const formData = {
       labSrNo: labSrNoRef.current.value,
@@ -253,11 +204,13 @@ function CreateReport() {
 
     try {
       await generatePdf(formData, flag);
+
       if (edit) {
-        await updateReport(formData);
+        await ReportsApi.update(current.labSrNo, formData);
       } else {
-        await saveReport(formData);
+        await ReportsApi.save(current, formData);
       }
+
       setError("");
       setMessage("Report saved successfully");
       showModal();
@@ -275,54 +228,33 @@ function CreateReport() {
     async function fetchData() {
       const queryParams = new URLSearchParams(location.search);
       const labSrNo = queryParams.get("edit");
+      setFetching(true);
 
       if (!labSrNo) {
         // Make new Report
-        try {
-          const querySnapshot = await db.collection("current").get();
-          querySnapshot.forEach((doc) => {
-            setCurrent({ id: doc.id, ...doc.data() });
-            setEdit(false);
-            setFetching(false);
-          });
-        } catch (err) {
-          console.log(err);
-        }
+        const curr = await ReportsApi.getCurrent();
+
+        setCurrent(curr);
+        setEdit(false);
+        setFetching(false);
       } else {
         // Edit Existing Report
-        try {
-          const doc = await db.collection("reports").doc(labSrNo).get();
-          if (doc.exists) {
-            let data = doc.data();
-            data["dateExamined"] = convertDate(data["dateExamined"]);
-            data["dateExpiry"] = convertDate(data["dateExpiry"]);
-            setExpiryDate(data["dateExpiry"]);
-            data["dob"] = convertDate(data["dob"]);
-            data["doi"] = convertDate(data["doi"]);
 
-            data["weight"] = data["weight"].split(" ")[0];
-            data["height"] = data["height"].split(" ")[0];
-            data["urea"] = data["urea"].split(" ")[0];
-            data["creatinine"] = data["creatinine"].split(" ")[0];
-            data["bloodSugar"] = data["bloodSugar"].split(" ")[0];
-            data["hemoglobin"] = data["hemoglobin"].split(" ")[0];
-            data["bloodPressure"] = data["bloodPressure"].split(" ")[0];
-            data["bloodSugar"] = data["bloodSugar"].split(" ")[0];
+        const report = await ReportsApi.getById(labSrNo);
 
-            setCurrent(data);
-            setEdit(true);
-            setPhotoUrl(doc.data().candidatePhoto);
-            console.log(doc.data());
-            setPhotoName(doc.data().photoName);
-            setFetching(false);
-          } else {
-            alert("no such report found");
-            console.log("no such doc");
-            history.push("/dashboard/reports");
-          }
-        } catch (err) {
-          console.log(err);
+        if (report) {
+          setExpiryDate(report["dateExpiry"]);
+          setCurrent(report);
+          setEdit(true);
+          setPhotoUrl(report.candidatePhoto);
+          setPhotoName(report.photoName);
+        } 
+        else {
+          alert("Report Not Found !, Invalid Lab Sr No.");
+          history.push("/dashboard/reports");
         }
+
+        setFetching(false);
       }
     }
 
