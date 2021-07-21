@@ -2,16 +2,15 @@ import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
-  Col,
   Button,
   Alert,
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { Formik, Form } from 'formik';
+import { Formik, Form, Field } from 'formik';
 
 // Layouts
-import Col from "../components/Layouts/Col";
+import COL from "../components/Layouts/Col";
 import Heading from "../components/Heading";
 
 // Helpers
@@ -20,34 +19,45 @@ import generatePdf from "../utils/pdfLib";
 import { REPORT_FIELDS } from '../constants'
 
 // Forms Components
-import TextField from "../components/form/TextField";
-import TextFieldWithUnit from "../components/form/TextFieldWithUnit";
-import DateField from "../components/form/DateField"
-import ExpiryDateField from "../components/form/ExpiryDateField";
+import TextField from "../components/Form/TextField";
+import TextFieldWithUnit from "../components/Form/TextFieldWithUnit";
+import DateField from "../components/Form/DateField"
+import SelectField from "../components/Form/SelectField";
+import FileUpload from '../components/Form/FileUpload'
+import TextArea from '../components/Form/TextArea'
 
 // Reactive form components
-import FileUpload from '../components/form/FileUpload'
-import DisplayPhoto from "../components/form/ReactiveFields/DisplayPhoto";
-import Pregnancy from "../components/form/ReactiveFields/Pregnancy";
+import DisplayPhoto from "../components/Form/ReactiveFields/DisplayPhoto";
+import Pregnancy from "../components/Form/ReactiveFields/Pregnancy";
+import ExpiryDateField from "../components/Form/ReactiveFields/ExpiryDateField";
+
 
 function CreateReport() {
   // States related to Modal
-  const [report, setReport] = useState({});
+  const [data, setData] = useState({
+    report: {...REPORT_FIELDS},
+    edit: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
   const [show, setShow] = useState(false);
   const closeModal = () => setShow(false);
   const showModal = () => setShow(true);
 
+  const location = useLocation();
   const history = useHistory();
-  async function generateReport(flag) {
+  
+  async function saveAndGenerateReport(flag) {
     setLoading(true);
-    const formData = {
-
-    };
 
     try {
       await generatePdf(formData, flag);
 
-      if (edit) {
+      if (data.report.edit) {
         await ReportsApi.update(current.labSrNo, formData);
       } else {
         await ReportsApi.save(current, formData);
@@ -65,36 +75,39 @@ function CreateReport() {
     setLoading(false);
   }
 
-  const location = useLocation();
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
+
       const queryParams = new URLSearchParams(location.search);
       const labSrNo = queryParams.get("edit");
-      setFetching(true);
+      const editReport = (labSrNo ? true : false);
 
-      if (!labSrNo) {
-        // Make new Report
-        const data = await ReportsApi.getCurrent();
-
-        setReport(data);
-        setEdit(false);
-        setFetching(false);
+      const data = ( 
+        editReport ? 
+        await ReportsApi.getById(labSrNo) : 
+        await ReportsApi.getCurrent() 
+      );
+      
+      if (data) {
+        const reportData = (
+              editReport ? 
+              data : { 
+                labSrNo: `MT_${data.lab + 1}`,
+                refrenceNo: `MT_${data.refrence + 1}`,
+                ...REPORT_FIELDS
+              }
+        ) 
+        setData({
+          report: reportData,
+          edit: editReport,
+        });
       } else {
-        // Edit Existing Report
-
-        const data = await ReportsApi.getById(labSrNo);
-
-        if (data) {
-          setReport(data);
-          setEdit(true);
-        } 
-        else {
-          alert("Report Not Found !, Invalid Lab Sr No.");
-          history.push("/dashboard/reports");
-        }
-
-        setFetching(false);
+        alert("Report Not Found !, Invalid Lab Sr No.");
+        history.push("/dashboard/reports");
       }
+
+      setLoading(false);  
     }
 
     fetchData();
@@ -102,14 +115,13 @@ function CreateReport() {
 
   return (
     <>
-      {fetching && (
+      {loading ? (
         <Container className="pt-4 text-center">
-          <img src="/assets/images/loader.gif" alt="loader" />
+            <img src="/assets/images/loader.gif" alt="loader"/>
         </Container>
-      )}
-      {!fetching && (
+      ) : (
         <Container className="pt-4">
-          <Row className="fill-report-icon text-center">
+          <Row className="fill-report-icon text-center justify-content-center">
               <img
                 src="/assets/images/fill-report.png"
                 alt="fill-report-icon"
@@ -119,16 +131,9 @@ function CreateReport() {
 
           <Formik
             initialValues={ 
-                edit ? 
-                report : 
-                { 
-                  labSrNo: `MT_${report.lab + 1}`,
-                  refrenceNo: `MT_${report.refrence + 1}`,
-                  ...REPORT_FIELDS
-                } 
+              data.report
             }
             onSubmit={(values, { setSubmitting }) => {
-              setSubmitting(false);
               console.log(values);
             }}
           >
@@ -136,32 +141,32 @@ function CreateReport() {
               <br />
               <br />
               <Row>
-                <Col>
+                <COL>
                     <TextField name="labSrNo" label="Lab Sr No."  disabled={true}/>
-                </Col>
-                <Col>
+                </COL>
+                <COL>
                     <TextField name="refrenceNo" label="Reference No."  disabled={true}/>                    
-                </Col>
+                </COL>
               </Row>
               <br />
               <br />
               <Heading> Candidate Information </Heading>
               <Row>
-                <Col title="Date">
+                <COL title="Date">
                       <DateField name="dateExamined" label="Examined Date" required/>
                       <ExpiryDateField name="dateExpiry" label="Expiry Date" disabled={true} required/>
-                </Col>
-                <Col title="Upload Photo">
+                </COL>
+                <COL title="Upload Photo">
                   <FileUpload />                
-                </Col>
-                <Col> 
+                </COL>
+                <COL> 
                   <DisplayPhoto />
-                </Col>
+                </COL>
               </Row>
               <br />
               <br />
               <Row>
-                <Col>
+                <COL>
                       <TextField name="fullName" label="Full Name" required/>
                       <TextField name="age" label="Age" required/>
                       <SelectField name="gender" label="Gender" required>
@@ -171,8 +176,8 @@ function CreateReport() {
                         <option value="Others">Others</option>
                       </SelectField>
                       <TextFieldWithUnit name="height" label="Height" unit="cm" />
-                </Col>
-                <Col>
+                </COL>
+                <COL>
                       <TextFieldWithUnit name="weight" label="Weight" unit="kg" />
                       <SelectField name="maritalStatus" label="Marital Status" required>
                           <option value="">-- Select --</option>
@@ -181,20 +186,20 @@ function CreateReport() {
                       </SelectField>
                       <DateField name="dob" label="Date of Birth" required/>
                       <DateField name="doi" label="Date of Issue" required/>
-                </Col>
-                <Col>
+                </COL>
+                <COL>
                     <TextField name="poi" label="Place of Issue" required/>
                     <TextField name="nationality" label="Nationality" required/>
                     <TextField name="passport" label="Passport No." required/>
                     <TextField name="post" label="Post applied for." required/>
-                </Col>
+                </COL>
               </Row>
 
               {/* Medical Examination Form */}
               <br />
               <Heading>Medical examination</Heading>
               <Row>
-                <Col title="EYES">
+                <COL title="EYES">
                       <SelectField name="visionRightEye" label="Vision Right Eye">
                           <option value="">-- Select --</option>
                           <option value="6/6">6/6</option>
@@ -209,134 +214,57 @@ function CreateReport() {
                           <option value="6/18">6/18</option>
                       </SelectField>
                       <TextField name="otherLeftEye" label="Other Left Eye" />
-                </Col>
-                <Col title="EARS">
+                </COL>
+                <COL title="EARS">
                       <TextField name="rightEar" label="Right Ear" />
                       <TextField name="leftEar" label="Left Ear" />
-                </Col>
-                <Col title="SYSTEMATIC EXAM">
+                </COL>
+                <COL title="SYSTEMATIC EXAM">
                       <TextFieldWithUnit name="bloodPressure" label="Blood Pressure" unit="mm Hg" />
                       <TextField name="heart" label="Heart" />
                       <TextField name="lungs" label="Lungs" />
                       <TextField name="abdomen" label="Abdomen" />
-                </Col>
+                </COL>
               </Row>
               <br />
               <Row>
-                <Col title="VENEREAL DISEASES (CLINICAL)">
+                <COL title="VENEREAL DISEASES (CLINICAL)">
                       <SelectField name="VDRLorTPHA" label="VDRL/TPHA">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
                       </SelectField>
-                </Col>
-                <Col title="CHEST X-RAY">
+                </COL>
+                <COL title="CHEST X-RAY">
                       <TextField name="chest" label="" />
-                </Col>
-                <Col title="PREGNANCY">
+                </COL>
+                <COL title="PREGNANCY">
                       <Pregnancy />
-                </Col>
+                </COL>
               </Row>
               {/* Medical Examination Form */}
               <br />
 
               {/* LAB INVESTIGATION Form */}
               <br />
-              <h4
-                style={{ textTransform: "uppercase" }}
-                className="text-center pt-4 pb-4"
-              >
-                lab INVESTIGATION
-              </h4>
+              <Heading>LAB INVESTIGATION</Heading>
               <Row>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>URINE</Card.Title>
-
-                      <Form.Group id="sugar">
-                        <Form.Label>Sugar</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={sugarRef}
-                          defaultValue={edit ? current.sugar : `NIL`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="albumin">
-                        <Form.Label>Albumin</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={albuminRef}
-                          defaultValue={edit ? current.albumin : `NIL`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="urine-bilharziasis">
-                        <Form.Label>Bilharziasis</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={urineBilharziasisRef}
-                          defaultValue={edit ? current.urineBilharziasis : `NIL`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="urine-others">
-                        <Form.Label>Others</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={urineOthersRef}
-                          defaultValue={edit ? current.urineOthers : ``}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>BLOOD</Card.Title>
-
-                      <Form.Group id="hemoglobin">
-                        <Form.Label>Hemoglobin</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={hemoglobinRef}
-                          defaultValue={edit ? current.hemoglobin : ``}
-                          style={{ display: "inline" }}
-                        />
-                        <span style={{ marginLeft: "-4rem" }}>gm %</span>
-                      </Form.Group>
-                      <Form.Group id="malaria-film">
-                        <Form.Label>Malaria Film</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={malariaFilmRef}
-                          defaultValue={edit ? current.malariaFilm : `Not Seen`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="micro-filaria">
-                        <Form.Label>Micro Filaria</Form.Label>
-                        <Form.Control
-                          as="select"
-                          ref={microFilariaRef}
-                          defaultValue={
-                            edit ? current.microFilaria : `Non-Reactive`
-                          }
-                          custom
-                        >
+                <COL title="URINE">
+                      <TextField name="sugar" label="Sugar" />
+                      <TextField name="albumin" label="Albumin" />
+                      <TextField name="urineBilharziasis" label="Bilharziasis" />
+                      <TextField name="urineOthers" label="Others" />
+                </COL>
+                <COL title="BLOOD">
+                      <TextFieldWithUnit name="hemoglobin" label="Hemoglobin" unit="gm %" />
+                      <TextField name="malariaFilm" label="Malaria Film" />
+                      <SelectField name="microFilaria" label="Micro Filaria">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group id="blood-group">
-                        <Form.Label>Blood Group</Form.Label>
-                        <Form.Control
-                          as="select"
-                          ref={bloodGroupRef}
-                          defaultValue={edit ? current.bloodGroup : ``}
-                          custom
-                        >
+                      </SelectField>
+                      <SelectField name="bloodGroup" label="Blood Group">
                           <option value="">-- Select --</option>
-
                           <option value="A+">A+</option>
                           <option value="B+">B+</option>
                           <option value="O+">O+</option>
@@ -345,247 +273,85 @@ function CreateReport() {
                           <option value="O-">O-</option>
                           <option value="B-">B-</option>
                           <option value="A-">A-</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group id="blood-others">
-                        <Form.Label>Others</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={bloodOthersRef}
-                          defaultValue={edit ? current.bloodOthers : ``}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>STOOL</Card.Title>
-
-                      <Form.Group id="helminths">
-                        <Form.Label>Helminths</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={helminthsRef}
-                          defaultValue={edit ? current.helminths : `Not Seen`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="stool-bilharziasis">
-                        <Form.Label>Bilharziasis</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={stoolBilharziasisRef}
-                          defaultValue={
-                            edit ? current.stoolBilharziasis : `Not Seen`
-                          }
-                        />
-                      </Form.Group>
-                      <Form.Group id="salmonella-shigella">
-                        <Form.Label>Salmonella/Shigella</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={salmonellaShigellaRef}
-                          defaultValue={edit ? current.salmonellaShigella : `NAD`}
-                        />
-                      </Form.Group>
-                      <Form.Group id="v-cholera">
-                        <Form.Label>V. Cholera</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={choleraRef}
-                          defaultValue={edit ? current.cholera : `NAD`}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
+                      </SelectField>
+                      <TextField name="bloodOthers" label="Others" />
+                </COL>
+                <COL title="STOOL">
+                      <TextField name="helminths" label="Helminths" />
+                      <TextField name="stoolBilharziasis" label="Bilharziasis" />
+                      <TextField name="salmonellaShigella" label="Salmonella/Shigella" />
+                      <TextField name="cholera" label="V. Cholera" />
+                </COL>
               </Row>
               <br />
               <Row>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>SEROLOGY</Card.Title>
-                      <Form.Group id="hiv">
-                        <Form.Label>HIV</Form.Label>
-                        <Form.Control
-                          as="select"
-                          ref={hivRef}
-                          defaultValue={edit ? current.hiv : `Non-Reactive`}
-                          custom
-                        >
+                <COL title="SEROLOGY">
+                      <SelectField name="hiv" label="HIV">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group id="hbsag">
-                        <Form.Label>HBsAg</Form.Label>
-                        <Form.Control
-                          as="select"
-                          ref={hbsagRef}
-                          defaultValue={edit ? current.hbsag : `Non-Reactive`}
-                          custom
-                        >
+                      </SelectField>
+                      <SelectField name="hsabg" label="HBsAg">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group id="anti-hcv">
-                        <Form.Label>Anti HCV</Form.Label>
-                        <Form.Control
-                          as="select"
-                          ref={antiHCVRef}
-                          defaultValue={edit ? current.antiHCV : `Non-Reactive`}
-                          custom
-                        >
+                      </SelectField>
+                      <SelectField name="antiHCV" label="Anti HCV">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group id="lft">
-                        <Form.Label>L.F.T.</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={lftRef}
-                          defaultValue={edit ? current.lft : `Normal`}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>SEROLOGY</Card.Title>
-                      <Form.Group id="urea">
-                        <Form.Label>Urea</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={ureaRef}
-                          defaultValue={edit ? current.urea : ``}
-                          style={{ display: "inline" }}
-                        />
-                        <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
-                      </Form.Group>
-                      <Form.Group id="creatinine">
-                        <Form.Label>Creatinine</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={creatinineRef}
-                          defaultValue={edit ? current.creatinine : ``}
-                          style={{ display: "inline" }}
-                        />
-                        <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
-                      </Form.Group>
-                      <Form.Group id="blood-sugar">
-                        <Form.Label>Blood Sugar</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={bloodSugarRef}
-                          defaultValue={edit ? current.bloodSugar : ``}
-                          style={{ display: "inline" }}
-                        />
-                        <span style={{ marginLeft: "-4rem" }}>mg/dl</span>
-                      </Form.Group>
-                      <Form.Group id="kft">
-                        <Form.Label>K.F.T.</Form.Label>
-                        <Form.Control
-                          type="text"
-                          ref={kftRef}
-                          defaultValue={edit ? current.kft : `Normal`}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>Covid</Card.Title>
-                      <Form.Group>
-                        <Form.Control
-                          as="select"
-                          className="covid"
-                          ref={covidRef}
-                          defaultValue={edit ? current.covid : ""}
-                          custom
-                        >
+                      </SelectField>
+                      <TextField name="lft" label="L.F.T" />
+                </COL>
+                <COL title="SEROLOGY">
+                      <TextFieldWithUnit name="urea" label="Urea" unit="mg/dl" />
+                      <TextFieldWithUnit name="creatinine" label="Creatinine" unit="mg/dl" />
+                      <TextFieldWithUnit name="bloodSugar" label="Blood Sugar" unit="mg/dl" />
+                      <TextField name="kft" label="K.F.T" />
+                </COL>
+                <COL title="COVID">
+                      <SelectField name="covid" label="Covid">
                           <option value="">-- Select --</option>
                           <option value="Positive"> Positive </option>
-                          <option value="Negative"> Negative </option>
-                        </Form.Control>
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
+                          <option value="Negative"> Negative </option>                      
+                      </SelectField>
+                </COL>
               </Row>
               {/* LAB INVESTIGATION Form */}
 
               <br />
               <br />
               <Row>
-                <Col>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>Remarks</Card.Title>
-                      <Form.Group>
-                        <Form.Label>FIT or UNFIT</Form.Label>
-                        <Form.Control
-                          as="select"
-                          className="fit"
-                          ref={fitRef}
-                          defaultValue={edit ? current.fit : ""}
-                          custom
-                        >
+                <COL title="Remarks">
+                      <SelectField name="fit" label="Fit or Unfit">
                           <option value="">-- Select --</option>
                           <option value="FIT"> FIT </option>
-                          <option value="UNFIT"> UNFIT </option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Remarks:- </Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          ref={remarksRef}
-                          defaultValue={edit ? current.remarks : ``}
-                        />
-                      </Form.Group>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
+                          <option value="UNFIT"> UNFIT </option>                      
+                      </SelectField>
+                      <TextArea name="remarks" label="Remarks:-"/>
+                      <Field name="reportCompleted" className="" style={{width: '25px'}} type="checkbox"/>
+                      <p>
+                        Tick this to print final report.
+                      </p>
+                </COL>
+                <COL>
                   <div>
                     {error.length > 0 && <Alert variant="danger">{error}</Alert>}
                   </div>
-                </Col>
+                </COL>
               </Row>
 
               <br />
               <br />
               <Button
-                disabled={loading}
-                type="button"
+                disabled={isSubmitting}
+                type="submit"
                 className="px-4 py-2"
                 style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
-                onClick={() => generateReport(false)}
               >
-                CREATE TEST REPORT
+                GENERATE REPORT
               </Button>
-              <Button
-                disabled={loading}
-                type="button"
-                className="px-4 py-2 ml-4"
-                style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
-                onClick={() => generateReport(true)}
-              >
-                GENERATE FINAL REPORT
-              </Button>
-              {loading && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
+              {isSubmitting && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
             </Form>
           </Formik>
           <br />

@@ -2,7 +2,7 @@ import { useField, useFormikContext } from "formik";
 import { useEffect } from "react";
 import { Form } from 'react-bootstrap';
 
-import { getExpiryDate } from "../../utils/date.helper";
+import { getExpiryDate } from "../../../utils/date.helper";
 
 const ExpiryDateField = ({ label, ...props }) => {
     const { 

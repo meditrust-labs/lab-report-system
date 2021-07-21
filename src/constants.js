@@ -18,7 +18,6 @@ export const SEARCH_OPTIONS = {
 };
 
 export const REPORT_FIELDS = {
-
   // Candidate Information
   dateExamined:  '', // convertDate(dateExaminedRef.current.value),
   dateExpiry: '', // convertDate(dateExpiryRef.current.value),
@@ -31,7 +30,7 @@ export const REPORT_FIELDS = {
   gender: '',
   height: '', // heightRef.current.value.length > 0 ? heightRef.current.value + " cm" : "",
 
-  weight: 0, // weightRef.current.value.length > 0 ? weightRef.current.value + " kg" : "",
+  weight: '', // weightRef.current.value.length > 0 ? weightRef.current.value + " kg" : "",
   maritalStatus: '',
   dob: '', // convertDate(dobRef.current.value),
   doi: '', // convertDate(doiRef.current.value),
