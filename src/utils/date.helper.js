@@ -17,3 +17,7 @@ export const convertDate = (value) => {
     date = date.join("-");
     return date;
 }
+
+export const getNumericData = (value) => {
+    return value.split(" ")[0];
+}

@@ -2,21 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { db, storage } from "../firebase.config";
+import ReportsApi from "../services/firebase.service";
+import { SEARCH_OPTIONS } from "../constants";
 
 function Reports() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
 
-  const options = [
-    "labSrNo",
-    "dateExamined",
-    "dateExpiry",
-    "fullName",
-    "dob",
-    "passport",
-  ];
   const searchRef = useRef();
   const selectRef = useRef();
 
@@ -24,31 +17,14 @@ function Reports() {
     e.preventDefault();
     setLoading(true);
 
-    let value = searchRef.current.value.toUpperCase();
-    const idx = selectRef.current.options.selectedIndex;
-    const option = options[idx];
+    const value = searchRef.current.value.toUpperCase();
+    const option = selectRef.current.value;
 
-    const reportsRef = db.collection("reports");
-    let querySnapshot;
+    // const api = new ReportsApi();
+    const result = await ReportsApi.find(option, value);
 
-    try {
-      if (value.length == 0) {
-        querySnapshot = await reportsRef
-          .orderBy("dateExamined", "desc")
-          .limit(15)
-          .get();
-
-        // console.log("0 length", querySnapshot);
-      } else {
-        querySnapshot = await reportsRef.where(option, "==", value).get();
-        // console.log("value", value, querySnapshot);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-
-    if (!querySnapshot.empty) {
-      setData(querySnapshot.docs);
+    if (!result.empty) {
+      setData(result.docs);
     } else {
       setData([]);
     }
@@ -57,41 +33,36 @@ function Reports() {
     return;
   }
 
-  async function fetchReports() {
-    setLoading(true);
-    try {
-      const snapshot = await db
-        .collection("reports")
-        .orderBy("dateExamined", "desc")
-        .limit(15)
-        .get();
-      setData(snapshot.docs);
-    } catch (err) {
-      console.log(err);
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
   const deleteReport = async (id) => {
     setRemoving(true);
-    try {
-      const photoName = data.find((report) => report.id === id).data()
-        .photoName;
 
-      const deleteReport = db.collection("reports").doc(id).delete();
-      const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
+    const photoName = data
+                      .find((report) => report.id === id)
+                      .data()
+                      .photoName;
 
-      await Promise.all([deleteReport, deletePhoto]);
-    } catch (err) {
-      console.log(err);
-    }
+    // const api = new ReportsApi();
+    await ReportsApi.delete(photoName, id);
+
+    const newData = data.filter((report) =>  report.id !== id);
+    
+    setData(newData);
     setRemoving(false);
-    await fetchReports();
   };
+
+  useEffect(() => {
+    async function fetchReports() {
+      setLoading(true);
+
+      // const api = new ReportsApi();
+      const data = await ReportsApi.get();
+      
+      setData(data.docs);
+      setLoading(false);
+    }
+
+    fetchReports();
+  }, []);
 
   return (
     <Container className="pt-4 text-center">
@@ -101,12 +72,9 @@ function Reports() {
             <Form.Group>
               <Form.Label style={{ fontWeight: "bold" }}>Find By</Form.Label>
               <Form.Control as="select" ref={selectRef} custom>
-                <option>Lab Sr No.</option>
-                <option>Date Examined</option>
-                <option>Date Expiry</option>
-                <option>Name</option>
-                <option>Date of Birth</option>
-                <option>Passport Number</option>
+                {Object.keys(SEARCH_OPTIONS).map((option, index) => {
+                  return (<option value={SEARCH_OPTIONS[option]} key={index}>{option}</option>)
+                })}
               </Form.Control>
             </Form.Group>
           </Col>
@@ -206,4 +174,5 @@ function Reports() {
     </Container>
   );
 }
+
 export default Reports;
