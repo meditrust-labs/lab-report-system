@@ -61,7 +61,12 @@ async function generatePDF(formData, flag) {
 
   // set text fields
   Object.keys(formData).map((key, index) => {
-    if (key === "photoName" || key === "candidatePhoto" || key === "fit") return index;
+    if (
+      key === "photoName" ||
+      key === "candidatePhoto" ||
+      key === "fit" ||
+      key === "reportCompleted"
+    ) return index;
 
     const value = formData[key];
     const field = form.getTextField(key);

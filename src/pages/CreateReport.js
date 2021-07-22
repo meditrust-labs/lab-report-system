@@ -134,8 +134,8 @@ function CreateReport() {
               data.report
             }
             onSubmit={ async (values, {}) => {
-              console.log(values);
-              await saveAndGenerateReport(values);
+              const formattedValues = formattedValues(values);
+              await saveAndGenerateReport(formattedValues);
             }}
           >
             <Form>
@@ -292,7 +292,7 @@ function CreateReport() {
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>
                       </SelectField>
-                      <SelectField name="hsabg" label="HBsAg">
+                      <SelectField name="hbsag" label="HBsAg">
                           <option value="">-- Select --</option>
                           <option value="Reactive">Reactive</option>
                           <option value="Non-Reactive">Non-Reactive</option>

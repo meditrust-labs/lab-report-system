@@ -1,6 +1,7 @@
 import { storage, db } from '../firebase.config';
 import { ALLOWED_EXTNS } from '../constants';
-import { convertDate, getNumericData } from '../utils/date.helper';
+import { convertDate } from '../utils/date.helper';
+import { getNumericData } from '../utils/data.helper';
 
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
@@ -57,6 +58,7 @@ class ReportsApi {
 
     static async save(current, formData) {
         const saveData = reportsRef.doc(`MT_${current.lab + 1}`).set(formData);
+        console.log(current);
         const updateCurrent = currentRef.doc(current.id).update({
             lab: current.lab + 1,
             refrence: current.refrence + 1,

@@ -18,6 +18,3 @@ export const convertDate = (value) => {
     return date;
 }
 
-export const getNumericData = (value) => {
-    return value.split(" ")[0];
-}
