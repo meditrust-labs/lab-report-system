@@ -56,7 +56,6 @@ class ReportsApi {
     }
 
     static async save(current, formData) {
-        console.log(current);
         const saveData = reportsRef.doc(`MT_${current.lab + 1}`).set(formData);
         const updateCurrent = currentRef.doc(current.id).update({
             lab: current.lab + 1,

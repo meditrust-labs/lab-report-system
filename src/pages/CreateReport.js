@@ -38,9 +38,9 @@ function CreateReport() {
     report: {...REPORT_FIELDS},
     edit: false,
   });
-  const [loading, setLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -51,16 +51,16 @@ function CreateReport() {
   const location = useLocation();
   const history = useHistory();
   
-  async function saveAndGenerateReport(flag) {
-    setLoading(true);
+  async function saveAndGenerateReport(formData) {
+    setSaving(true);
 
     try {
-      await generatePdf(formData, flag);
+      await generatePdf(formData, formData.reportCompleted);
 
       if (data.report.edit) {
-        await ReportsApi.update(current.labSrNo, formData);
+        await ReportsApi.update(data.report.labSrNo, formData);
       } else {
-        await ReportsApi.save(current, formData);
+        await ReportsApi.save(data.report, formData);
       }
 
       setError("");
@@ -72,11 +72,10 @@ function CreateReport() {
       setError(`${err}`);
     }
 
-    setLoading(false);
+    setSaving(false);
   }
 
-  useEffect(() => {
-    async function fetchData() {
+  async function fetchData() {
       setLoading(true);
 
       const queryParams = new URLSearchParams(location.search);
@@ -108,8 +107,9 @@ function CreateReport() {
       }
 
       setLoading(false);  
-    }
+  }
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -133,8 +133,9 @@ function CreateReport() {
             initialValues={ 
               data.report
             }
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={ async (values, {}) => {
               console.log(values);
+              await saveAndGenerateReport(values);
             }}
           >
             <Form>
@@ -344,14 +345,14 @@ function CreateReport() {
               <br />
               <br />
               <Button
-                disabled={isSubmitting}
+                disabled={saving}
                 type="submit"
                 className="px-4 py-2"
                 style={{ fontSize: "1.2rem", letterSpacing: "2px" }}
               >
                 GENERATE REPORT
               </Button>
-              {isSubmitting && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
+              {saving && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
             </Form>
           </Formik>
           <br />

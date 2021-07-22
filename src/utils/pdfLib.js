@@ -76,8 +76,18 @@ async function generatePDF(formData, flag) {
   if (flag) {
     // Set FIT/UNFIT value
     const value = formData['fit'];
-    const field = form.getTextField('fit');
+    console.log(value);
+    const field = form.getTextField('fit-remarks');
     field.setText(value);
+
+    if (value === "FIT") {
+      form.getTextField('fit').setText(value);
+      form.getTextField('unfit').setText("");
+    }
+    else if(value === "UNFIT") {
+      form.getTextField('fit').setText("");
+      form.getTextField('unfit').setText(value);
+    }
 
     // Embed the stamp
     const stamp = await pdfDoc.embedPng(stampBytes);
