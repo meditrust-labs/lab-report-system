@@ -17,6 +17,7 @@ import Heading from "../components/Heading";
 import ReportsApi from '../services/firebase.service'
 import generatePdf from "../utils/pdfLib";
 import { REPORT_FIELDS } from '../constants'
+import { formatSavingData } from '../utils/data.helper';
 
 // Forms Components
 import TextField from "../components/Form/TextField";
@@ -53,14 +54,14 @@ function CreateReport() {
   
   async function saveAndGenerateReport(formData) {
     setSaving(true);
-
+    const formattedFormData = formatSavingData(formData);
     try {
-      await generatePdf(formData, formData.reportCompleted);
+      await generatePdf(formattedFormData, formData.reportCompleted);
 
-      if (data.report.edit) {
-        await ReportsApi.update(data.report.labSrNo, formData);
+      if (data.edit) {
+        await ReportsApi.update(formattedFormData);
       } else {
-        await ReportsApi.save(data.report, formData);
+        await ReportsApi.save(formattedFormData);
       }
 
       setError("");
@@ -75,43 +76,44 @@ function CreateReport() {
     setSaving(false);
   }
 
-  async function fetchData() {
-      setLoading(true);
-
-      const queryParams = new URLSearchParams(location.search);
-      const labSrNo = queryParams.get("edit");
-      const editReport = (labSrNo ? true : false);
-
-      const data = ( 
-        editReport ? 
-        await ReportsApi.getById(labSrNo) : 
-        await ReportsApi.getCurrent() 
-      );
-      
-      if (data) {
-        const reportData = (
-              editReport ? 
-              data : { 
-                labSrNo: `MT_${data.lab + 1}`,
-                refrenceNo: `MT_${data.refrence + 1}`,
-                ...REPORT_FIELDS
-              }
-        ) 
-        setData({
-          report: reportData,
-          edit: editReport,
-        });
-      } else {
-        alert("Report Not Found !, Invalid Lab Sr No.");
-        history.push("/dashboard/reports");
-      }
-
-      setLoading(false);  
-  }
-
   useEffect(() => {
+    async function fetchData() {
+        setLoading(true);
+
+        const queryParams = new URLSearchParams(location.search);
+        const labSrNo = queryParams.get("edit");
+        const editReport = (labSrNo ? true : false);
+        const data = ( 
+          editReport ? 
+          await ReportsApi.getById(labSrNo) : 
+          await ReportsApi.getCurrent() 
+        );
+        
+        if (data) {
+          const reportData = (
+                editReport ? 
+                data : {
+                  id: data.id,
+                  lab: data.lab,
+                  refrence: data.refrence,
+                  labSrNo: `MT_${data.lab + 1}`,
+                  refrenceNo: `MT_${data.refrence + 1}`,
+                  ...REPORT_FIELDS
+                }
+          ) 
+          setData({
+            report: reportData,
+            edit: editReport,
+          });
+        } else {
+          alert("Report Not Found !, Invalid Lab Sr No.");
+          history.push("/dashboard/reports");
+        }
+
+        setLoading(false);  
+    }
     fetchData();
-  }, []);
+  },[]);
 
   return (
     <>
@@ -133,9 +135,8 @@ function CreateReport() {
             initialValues={ 
               data.report
             }
-            onSubmit={ async (values, {}) => {
-              const formattedValues = formattedValues(values);
-              await saveAndGenerateReport(formattedValues);
+            onSubmit={ async (values) => {
+              await saveAndGenerateReport(values);
             }}
           >
             <Form>
