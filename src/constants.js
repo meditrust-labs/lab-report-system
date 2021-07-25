@@ -8,6 +8,18 @@ export const CACHE_NAME = "meditrust_app";
 
 export const ALLOWED_EXTNS = /(\.jpg|\.jpeg)$/i;
 
+export const EXCLUDED_FIELDS = [
+  "photoName",
+  "candidatePhoto",
+  "fit",
+  "reportCompleted",
+  "id",
+  "lab",
+  "refrence",
+  "updatedAt",
+  "createdAt"
+]
+
 export const SEARCH_OPTIONS = {
     "Lab Sr No." : "labSrNo",
     "Examined Date": "dateExamined",
@@ -52,7 +64,7 @@ export const REPORT_FIELDS = {
   leftEar: 'NAD',
   
   // -> systematic exam
-  bloodPressure: '',
+  bloodPressure: '', // add mm Hg
   heart: '',
   lungs: '',
   abdomen: '',

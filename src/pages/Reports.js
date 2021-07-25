@@ -3,12 +3,14 @@ import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import ReportsApi from "../services/firebase.service";
+import generatePdf from "../utils/pdfLib";
 import { SEARCH_OPTIONS } from "../constants";
 
 function Reports() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const searchRef = useRef();
   const selectRef = useRef();
@@ -41,7 +43,6 @@ function Reports() {
                       .data()
                       .photoName;
 
-    // const api = new ReportsApi();
     await ReportsApi.delete(photoName, id);
 
     const newData = data.filter((report) =>  report.id !== id);
@@ -49,6 +50,13 @@ function Reports() {
     setData(newData);
     setRemoving(false);
   };
+
+  const downloadReport = async (id, flag) => {
+    setDownloading(true);
+    const reportData = data.find((report) => report.id == id).data();
+    await generatePdf(reportData, flag);
+    setDownloading(false);
+  }
 
   useEffect(() => {
     async function fetchReports() {
@@ -128,6 +136,9 @@ function Reports() {
                   <td> Passport No </td>
                   <td> Edit </td>
                   <td> Delete </td>
+                  <td> Test Report </td>
+                  <td> Final Report </td>
+
                 </tr>
               </thead>
               <tbody>
@@ -141,11 +152,16 @@ function Reports() {
                       <td>{doc.data().dob}</td>
                       <td>{doc.data().passport}</td>
                       <td>
-                        <Link
-                          to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
+                        <Button
+                          variant="primary"
                         >
-                          Edit
-                        </Link>
+                          <Link
+                            style={{ color: '#fff', textDecoration: 'none'}}
+                            to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
+                          >
+                            Edit
+                          </Link>
+                        </Button>
                       </td>
                       <td>
                         <Button
@@ -154,6 +170,24 @@ function Reports() {
                           disabled={removing}
                         >
                           Delete
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, false)}
+                          disabled={downloading}
+                        >
+                          Download
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, true)}
+                          disabled={downloading}
+                        >
+                          Download
                         </Button>
                       </td>
                     </tr>

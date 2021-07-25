@@ -4,7 +4,8 @@ import {
   TEST_REPORT_URL, 
   FINAL_REPORT_URL, 
   STAMP_URL, 
-  CACHE_NAME 
+  CACHE_NAME,
+  EXCLUDED_FIELDS
 } from "../constants";
 
 async function fetchAndCacheData(url) {
@@ -60,13 +61,13 @@ async function generatePDF(formData, flag) {
   const form = pdfDoc.getForm();
 
   // set text fields
-  Object.keys(formData).map((key, index) => {
-    if (key === "photoName" || key === "candidatePhoto" || key === "fit") return index;
+  Object.keys(formData).forEach((key) => {
+    if (EXCLUDED_FIELDS.indexOf(key) >= 0)
+      return;
 
     const value = formData[key];
     const field = form.getTextField(key);
     field.setText(value);
-    return index;
   });
 
   // set candidate photo
