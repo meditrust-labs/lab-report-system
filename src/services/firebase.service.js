@@ -8,15 +8,7 @@ const currentRef = db.collection("current");
 
 class ReportsApi {
     static async get() {
-        let snapshot;
-
-        try {
-            snapshot = await reportsRef.orderBy("createdAt", "desc").limit(15).get();
-        } catch(err) {
-            console.log(err);
-        }
-
-        return snapshot;
+        return await reportsRef.orderBy("createdAt", "desc").limit(20).get();
     }
 
     static async getById(id) {
@@ -102,27 +94,17 @@ class ReportsApi {
 
     static async getCurrent() {
         let res;
-        try {
-            const querySnapshot = await currentRef.get();
-            querySnapshot.forEach((doc) => {
-                res = { id: doc.id, ...doc.data() };
-            });
-        } catch (err) {
-          console.log(err);
-        }
-
+        const querySnapshot = await currentRef.get();
+        querySnapshot.forEach((doc) => {
+            res = { id: doc.id, ...doc.data() };
+        });
         return res;
     }
 
     static async delete(photoName, id) {
-        try {
-            const deleteReport = db.collection("reports").doc(id).delete();
-            const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
-
-            await Promise.all([deleteReport, deletePhoto]);
-        } catch (err) {
-            console.log(err);
-        }
+        const deleteReport = db.collection("reports").doc(id).delete();
+        const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
+        await Promise.all([deleteReport, deletePhoto]);
     }
 }
 
