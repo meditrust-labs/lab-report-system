@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import {
   Container,
+  Col,
   Row,
   Button,
   Alert,
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { Formik, Form, Field, useFormikContext } from 'formik';
+import { Formik, Form, Field } from 'formik';
+
 
 // Layouts
 import COL from "../components/Layouts/Col";
 import Heading from "../components/Heading";
+
 
 // Helpers
 import ReportsApi from '../services/firebase.service'
@@ -161,7 +164,7 @@ function CreateReport() {
                 <COL title="Upload Photo">
                   <FileUpload />                
                 </COL>
-                <COL> 
+                <COL title="Candidate Photo"> 
                   <DisplayPhoto />
                 </COL>
               </Row>
@@ -336,11 +339,11 @@ function CreateReport() {
                         Tick this to print final report.
                       </p>
                 </COL>
-                <COL>
+                <Col>
                   <div>
                     {error.length > 0 && <Alert variant="danger">{error}</Alert>}
                   </div>
-                </COL>
+                </Col>
               </Row>
 
               <br />
@@ -368,7 +371,7 @@ function CreateReport() {
           <Button
             variant="primary"
             onClick={() => {
-              history.push("/dashboard");
+              history.push("/dashboard/reports");
               closeModal();
             }}
           >
