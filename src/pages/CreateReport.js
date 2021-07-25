@@ -7,7 +7,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useFormikContext } from 'formik';
 
 // Layouts
 import COL from "../components/Layouts/Col";
@@ -51,7 +51,7 @@ function CreateReport() {
 
   const location = useLocation();
   const history = useHistory();
-  
+
   async function saveAndGenerateReport(formData) {
     setSaving(true);
     const formattedFormData = formatSavingData(formData);

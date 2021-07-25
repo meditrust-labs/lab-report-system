@@ -1,4 +1,4 @@
-import { storage, db } from '../firebase.config';
+import { storage, db, getTime } from '../firebase.config';
 import { ALLOWED_EXTNS } from '../constants';
 import { formatFetchedData } from '../utils/data.helper';
 
@@ -11,7 +11,7 @@ class ReportsApi {
         let snapshot;
 
         try {
-            snapshot = await reportsRef.orderBy("labSrNo", "desc").limit(15).get();
+            snapshot = await reportsRef.orderBy("createdAt", "desc").limit(15).get();
         } catch(err) {
             console.log(err);
         }
@@ -38,16 +38,17 @@ class ReportsApi {
     }
 
     static async update(formData) {
+        formData.updatedAt = getTime.serverTimestamp();
         return await reportsRef.doc(formData.labSrNo).update(formData);
     }
 
     static async save(formData) {
+        formData.createdAt = getTime.serverTimestamp();
         const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(formData);
         const updateCurrent = currentRef.doc(formData.id).update({
             lab: formData.lab + 1,
             refrence: formData.refrence + 1,
         });
-
         return await Promise.all([saveData, updateCurrent]);
     }
 

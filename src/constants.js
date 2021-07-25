@@ -15,7 +15,9 @@ export const EXCLUDED_FIELDS = [
   "reportCompleted",
   "id",
   "lab",
-  "refrence"
+  "refrence",
+  "updatedAt",
+  "createdAt"
 ]
 
 export const SEARCH_OPTIONS = {
