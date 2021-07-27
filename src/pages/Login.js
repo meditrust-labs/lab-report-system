@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
 
@@ -15,18 +16,22 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const id = toast.loading('Logging in...');
 
     if (
       emailRef.current.value.length > 0 &&
       passwordRef.current.value.length > 0
     ) {
-      //
+
+      setError("");
+      setLoading(true);
+
       try {
-        setError("");
-        setLoading(true);
         await login(emailRef.current.value, passwordRef.current.value);
+        toast.success('Login successful', { id });
         history.push("/dashboard");
       } catch (err) {
+        toast.error('Oops an error occurred', { id });
         setError(err.message);
       }
 

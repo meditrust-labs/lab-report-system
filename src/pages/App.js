@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from "../contexts/AuthContext";
-
 import { PrivateRoute } from "../components/index";
 
 import Login from "./Login";
@@ -46,6 +46,7 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster />
       {loading && (
         <Container className="pt-4 text-center">
           <img src="/assets/images/loader.gif" alt="loader" />
