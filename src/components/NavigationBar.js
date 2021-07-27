@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Navbar, Nav, Button, Container, Modal } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
 import { db } from "../firebase.config";
@@ -17,26 +18,36 @@ export default function NavigationBar() {
 
   async function updateRefrence() {
     setLoading(true);
+    const id = toast.loading('Updating reference ...');
+
     try {
       const snapshot = await db.collection("current").get();
       const docId = snapshot.docs[0].id;
       await db.collection("current").doc(docId).update({ refrence: 0 });
+
+      toast.success('Reference updated successfully', { id });
     } catch (err) {
+      toast.error('An error occurred', { id });
       console.log(err);
     }
+
     closeModal();
     history.push("/dashboard");
     setLoading(false);
   }
 
   async function handleLogout() {
+    const id = toast.loading('Logging you out!');
+
     try {
       await logout();
-      history.push("/");
+      toast.success('Logged out', { id });
     } catch (err) {
+      toast.error('An error occurred', { id });
       console.log(err);
-      history.push("/");
     }
+
+    history.push("/");
   }
 
   return (

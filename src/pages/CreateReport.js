@@ -5,11 +5,10 @@ import {
   Row,
   Button,
   Alert,
-  Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
 import { Formik, Form, Field } from 'formik';
-
+import toast from 'react-hot-toast';
 
 // Layouts
 import COL from "../components/Layouts/Col";
@@ -46,17 +45,14 @@ function CreateReport() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
-  const [show, setShow] = useState(false);
-  const closeModal = () => setShow(false);
-  const showModal = () => setShow(true);
 
   const location = useLocation();
   const history = useHistory();
 
   async function saveAndGenerateReport(formData) {
     setSaving(true);
+    const id = toast.loading('Saving report ...');
+
     const formattedFormData = formatSavingData(formData);
     try {
       await generatePdf(formattedFormData, formData.reportCompleted);
@@ -67,12 +63,12 @@ function CreateReport() {
         await ReportsApi.save(formattedFormData);
       }
 
+      toast.success('Report saved successfully', { id });
       setError("");
-      setMessage("Report saved successfully");
-      showModal();
+      history.push("/dashboard/reports");
     } catch (err) {
+      toast.error('An error occurred while saving report, please try again', { id });
       console.log(err);
-      setMessage("");
       setError(`${err}`);
     }
 
@@ -82,10 +78,16 @@ function CreateReport() {
   useEffect(() => {
     async function fetchData() {
         setLoading(true);
-
+      
         const queryParams = new URLSearchParams(location.search);
         const labSrNo = queryParams.get("edit");
         const editReport = (labSrNo ? true : false);
+      
+        const toastId = (editReport ?
+          toast.loading('loading report data ...') :
+          toast.loading('creating new report ...'));
+
+
         const data = ( 
           editReport ? 
           await ReportsApi.getById(labSrNo) : 
@@ -103,17 +105,22 @@ function CreateReport() {
                   refrenceNo: `MT_${data.refrence + 1}`,
                   ...REPORT_FIELDS
                 }
-          ) 
+          )
+          if (editReport)
+            toast.success('Now you can start editing your report', { id: toastId });
+          else
+            toast.success('New report created successfully', { id: toastId });
+            
           setData({
             report: reportData,
             edit: editReport,
           });
         } else {
-          alert("Report Not Found !, Invalid Lab Sr No.");
+          toast.error('No report found with this serial no.', { id: toastId });
           history.push("/dashboard/reports");
         }
 
-        setLoading(false);  
+      setLoading(false);
     }
     fetchData();
   },[]);
@@ -356,7 +363,6 @@ function CreateReport() {
               >
                 GENERATE REPORT
               </Button>
-              {saving && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
             </Form>
           </Formik>
           <br />
@@ -364,21 +370,6 @@ function CreateReport() {
           <br />
         </Container>
       )}
-
-      <Modal show={show} onHide={closeModal} backdrop="static" keyboard={false}>
-        <Modal.Body>
-          {message.length > 0 && <Alert variant="success">{message}</Alert>}
-          <Button
-            variant="primary"
-            onClick={() => {
-              history.push("/dashboard/reports");
-              closeModal();
-            }}
-          >
-            OK
-          </Button>
-        </Modal.Body>
-      </Modal>
     </>
   );
 }

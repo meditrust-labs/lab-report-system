@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 import ReportsApi from "../services/firebase.service";
 import generatePdf from "../utils/pdfLib";
@@ -93,7 +93,7 @@ function Reports() {
   return (
     <Container className="p-4 text-center" fluid>
 
-      <Toaster />
+      
 
       <Form onSubmit={findReports}>
         <Row>

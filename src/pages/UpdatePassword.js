@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
 
 function UpdatePassword() {
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
 
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef();
@@ -18,20 +18,20 @@ function UpdatePassword() {
     e.preventDefault();
 
     if (passwordRef.current.value.length > 0) {
-
+      setError("");
+      setLoading(true);
+      const id = toast.loading('Updating password...');
+      
       try {
-        setError("");
-        setMessage("");
-        setLoading(true);
-
         await updatePassword(passwordRef.current.value);
-        setMessage("Password changed successfully ! Please login again");
+        toast.success('Password changed successfully', { id });
 
         setTimeout(async () => {
           await logout();
           history.push("/");
         }, 1000);
       } catch (err) {
+        toast.error('An error occurred', { id });
         console.log(err);
         setError(err.message);
       }
@@ -51,7 +51,6 @@ function UpdatePassword() {
         <Card>
           <Card.Body>
             {error.length > 0 && <Alert variant="danger">{error}</Alert>}
-            {message.length > 0 && <Alert variant="success">{message}</Alert>}
 
             <Form onSubmit={handleSubmit}>
               <Form.Group id="password">
