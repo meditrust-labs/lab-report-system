@@ -1,6 +1,12 @@
 import { PDFDocument } from "pdf-lib";
 
-import { BASE_URL, CACHE_NAME } from "./config";
+import { 
+  TEST_REPORT_URL, 
+  FINAL_REPORT_URL, 
+  STAMP_URL, 
+  CACHE_NAME,
+  EXCLUDED_FIELDS
+} from "../constants";
 
 async function fetchAndCacheData(url) {
   let cache;
@@ -32,21 +38,17 @@ async function fetchCachedData(url) {
     .catch((err) => console.log(err));
 }
 
-async function generatePDF(formData, edit) {
-  const formUrl = edit
-    ? BASE_URL + "/edit-report.pdf"
-    : BASE_URL + "/report.pdf";
-  // const signUrl = BASE_URL + "/sign.jpeg";
-  const stampUrl = BASE_URL + "/stamp.png";
-  const photoUrl = formData.candidatePhoto;
+async function generatePDF(formData, flag) {
+  const formUrl = flag
+    ? FINAL_REPORT_URL
+    : TEST_REPORT_URL;
 
-  // console.log(formUrl);
+  const photoUrl = formData.candidatePhoto;
 
   const [formPdfBytes, photoBytes, stampBytes] = await Promise.all([
     fetchCachedData(formUrl).then((res) => res.arrayBuffer()),
     fetch(photoUrl).then((res) => res.arrayBuffer()),
-    fetchCachedData(stampUrl).then((res) => res.arrayBuffer()),
-    // fetchCachedData(signUrl).then((res) => res.arrayBuffer()),
+    fetchCachedData(STAMP_URL).then((res) => res.arrayBuffer()),
   ]);
 
   // Load a PDF with form fields
@@ -59,33 +61,39 @@ async function generatePDF(formData, edit) {
   const form = pdfDoc.getForm();
 
   // set text fields
-  Object.keys(formData).map((key, index) => {
-    if (key === "photoName" || key === "candidatePhoto") return index;
+  Object.keys(formData).forEach((key) => {
+    if (EXCLUDED_FIELDS.indexOf(key) >= 0)
+      return;
 
     const value = formData[key];
     const field = form.getTextField(key);
     field.setText(value);
-    return index;
   });
 
   // set candidate photo
   const photoField = form.getButton("photo");
   photoField.setImage(photo);
 
-  if (edit) {
-    // Embed the sign
-    // const sign = await pdfDoc.embedJpg(signBytes);
-    // const signField = form.getButton("signature");
-    // signField.setImage(sign);
+  if (flag) {
+    // Set FIT/UNFIT value
+    const value = formData['fit'];
+    console.log(value);
+    const field = form.getTextField('fit-remarks');
+    field.setText(value);
+
+    if (value === "FIT") {
+      form.getTextField('fit').setText(value);
+      form.getTextField('unfit').setText("");
+    }
+    else if(value === "UNFIT") {
+      form.getTextField('fit').setText("");
+      form.getTextField('unfit').setText(value);
+    }
 
     // Embed the stamp
     const stamp = await pdfDoc.embedPng(stampBytes);
     const stampField = form.getButton("stamp");
     stampField.setImage(stamp);
-
-    // form.getTextField("dr_name").setText("DR. K.D. GANDHI");
-    // form.getTextField("dr_degree").setText("MBBS, MD (Micro)");
-    // form.getTextField("dr_position").setText("(Consultant Pathologist)");
   }
 
   form.flatten();

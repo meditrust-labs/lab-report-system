@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from "../contexts/AuthContext";
-import { Dashboard, Login, ResetPassword, PrivateRoute, Signup } from "./index";
-import { BASE_URL, CACHE_NAME } from "../config";
+import { PrivateRoute } from "../components/index";
+
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import ResetPassword from "./ResetPassword";
+
+
+import { 
+  TEST_REPORT_URL, 
+  FINAL_REPORT_URL, 
+  STAMP_URL, 
+  CACHE_NAME 
+} from "../constants";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -14,21 +26,17 @@ function App() {
     try {
       const cacheStorage = await caches.open(CACHE_NAME);
       const keys = await cacheStorage.keys();
-
       if (keys.length < 3) {
         await cacheStorage.addAll([
-          BASE_URL + "/report.pdf",
-          BASE_URL + "/edit-report.pdf",
-          BASE_URL + "/stamp.png",
+          TEST_REPORT_URL,
+          FINAL_REPORT_URL,
+          STAMP_URL
         ]);
-
-        // console.log(await cacheStorage.keys());
-      } else {
-        // console.log(keys);
       }
     } catch (err) {
       console.log("Caching Error => ", err);
     }
+
     setLoading(false);
   };
 
@@ -38,9 +46,10 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster />
       {loading && (
         <Container className="pt-4 text-center">
-          <img src="/830.gif" alt="loader" />
+          <img src="/assets/images/loader.gif" alt="loader" />
         </Container>
       )}
       {!loading && (
@@ -49,7 +58,6 @@ function App() {
             <Switch>
               <Route exact path="/" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              <Route path="/reset-password" component={ResetPassword} />
               <Route path="/reset-password" component={ResetPassword} />
               {/* <Route path="/signup" component={Signup} /> */}
             </Switch>

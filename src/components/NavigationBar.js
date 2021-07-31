@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Navbar, Nav, Button, Container, Modal } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
-import { db } from "../firebase";
+import { db } from "../firebase.config";
 
 export default function NavigationBar() {
   const { logout } = useAuth();
@@ -17,26 +18,36 @@ export default function NavigationBar() {
 
   async function updateRefrence() {
     setLoading(true);
+    const id = toast.loading('Updating reference ...');
+
     try {
       const snapshot = await db.collection("current").get();
       const docId = snapshot.docs[0].id;
       await db.collection("current").doc(docId).update({ refrence: 0 });
+
+      toast.success('Reference updated successfully', { id });
     } catch (err) {
+      toast.error('An error occurred', { id });
       console.log(err);
     }
+
     closeModal();
     history.push("/dashboard");
     setLoading(false);
   }
 
   async function handleLogout() {
+    const id = toast.loading('Logging you out!');
+
     try {
       await logout();
-      history.push("/");
+      toast.success('Logged out', { id });
     } catch (err) {
+      toast.error('An error occurred', { id });
       console.log(err);
-      history.push("/");
     }
+
+    history.push("/");
   }
 
   return (
@@ -46,7 +57,7 @@ export default function NavigationBar() {
           <Navbar.Brand>
             <img
               alt=""
-              src="/logo.png"
+              src="/assets/images/logo.png"
               width="30"
               height="30"
               className="d-inline-block align-top"
@@ -70,10 +81,10 @@ export default function NavigationBar() {
               style={{ marginRight: "1rem" }}
               onClick={() => {
                 if (window.location.href.includes("edit")) {
-                  history.push("/dashboard/report");
+                  history.push("/dashboard/create-report");
                   window.location.reload();
                 } else {
-                  history.push("/dashboard/report");
+                  history.push("/dashboard/create-report");
                 }
               }}
             >
@@ -82,7 +93,7 @@ export default function NavigationBar() {
 
             <Link
               className="btn btn-dark"
-              to="/dashboard/search"
+              to="/dashboard/reports"
               style={{ marginRight: "6rem" }}
             >
               Find Report

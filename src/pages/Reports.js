@@ -1,22 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
-import { db, storage } from "../firebase";
+import ReportsApi from "../services/firebase.service";
+import generatePdf from "../utils/pdfLib";
+import { SEARCH_OPTIONS } from "../constants";
 
-function FindReport() {
+function Reports() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
-  const options = [
-    "labSrNo",
-    "dateExamined",
-    "dateExpiry",
-    "fullName",
-    "dob",
-    "passport",
-  ];
   const searchRef = useRef();
   const selectRef = useRef();
 
@@ -24,31 +20,14 @@ function FindReport() {
     e.preventDefault();
     setLoading(true);
 
-    let value = searchRef.current.value.toUpperCase();
-    const idx = selectRef.current.options.selectedIndex;
-    const option = options[idx];
+    const value = searchRef.current.value.toUpperCase();
+    const option = selectRef.current.value;
 
-    const reportsRef = db.collection("reports");
-    let querySnapshot;
+    // const api = new ReportsApi();
+    const result = await ReportsApi.find(option, value);
 
-    try {
-      if (value.length == 0) {
-        querySnapshot = await reportsRef
-          .orderBy("labSrNo", "desc")
-          .limit(15)
-          .get();
-
-        // console.log("0 length", querySnapshot);
-      } else {
-        querySnapshot = await reportsRef.where(option, "==", value).get();
-        // console.log("value", value, querySnapshot);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-
-    if (!querySnapshot.empty) {
-      setData(querySnapshot.docs);
+    if (!result.empty) {
+      setData(result.docs);
     } else {
       setData([]);
     }
@@ -57,56 +36,74 @@ function FindReport() {
     return;
   }
 
-  async function fetchReports() {
-    setLoading(true);
+  const deleteReport = async (id) => {
+    setRemoving(true);
+    const toastId = toast.loading("Deleting report and the accociated data")
+    const { photoName }  = data.find((report) => report.id === id).data()
     try {
-      const snapshot = await db
-        .collection("reports")
-        .orderBy("labSrNo", "desc")
-        .limit(15)
-        .get();
-      setData(snapshot.docs);
-    } catch (err) {
-      console.log(err);
+      await ReportsApi.delete(photoName, id);
+      toast.success("Report Deleted Successfully", {id: toastId});
     }
-    setLoading(false);
+    catch (err) {
+      console.log(err);
+      toast.error(`${err}`, {id: toastId});
+    }
+
+    const newData = data.filter((report) =>  report.id !== id);
+    setData(newData);
+    setRemoving(false);
+  };
+
+  const downloadReport = async (id, flag) => {
+    setDownloading(true);
+    const toastId = toast.loading("Downloading report")
+
+    const reportData = data.find((report) => report.id == id).data();
+    
+    try {
+      await generatePdf(reportData, flag);
+      toast.success("Report Generated Successfully", {id: toastId})
+    }
+    catch (err) {
+      console.log(err);
+      toast.error("An error occured, please try again", { id: toastId })
+    }
+
+    setDownloading(false);
   }
 
   useEffect(() => {
+    async function fetchReports() {
+      const toastId = toast.loading("Loading report...");
+      
+      try {
+        const reports = await ReportsApi.get();
+        setData(reports.docs);
+        toast.success(`Fetched ${reports.docs.length} reports`, {id: toastId});
+      }
+      catch (err) {
+        console.log(err);
+        toast.error("An error occured!", {id: toastId});
+      }
+    }
+
     fetchReports();
   }, []);
 
-  const deleteReport = async (id) => {
-    setRemoving(true);
-    try {
-      const photoName = data.find((report) => report.id === id).data()
-        .photoName;
-
-      const deleteReport = db.collection("reports").doc(id).delete();
-      const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
-
-      await Promise.all([deleteReport, deletePhoto]);
-    } catch (err) {
-      console.log(err);
-    }
-    setRemoving(false);
-    await fetchReports();
-  };
-
   return (
-    <Container className="pt-4 text-center">
+    <Container className="p-4 text-center" fluid>
+
+      
+
       <Form onSubmit={findReports}>
         <Row>
           <Col className="text-left">
             <Form.Group>
               <Form.Label style={{ fontWeight: "bold" }}>Find By</Form.Label>
               <Form.Control as="select" ref={selectRef} custom>
-                <option>Lab Sr No.</option>
-                <option>Date Examined</option>
-                <option>Date Expiry</option>
-                <option>Name</option>
-                <option>Date of Birth</option>
-                <option>Passport Number</option>
+                {Object.keys(SEARCH_OPTIONS).map((option, index) => {
+                  return (<option value={SEARCH_OPTIONS[option]} key={index}>{option}</option>)
+                })}
               </Form.Control>
             </Form.Group>
           </Col>
@@ -139,20 +136,14 @@ function FindReport() {
           </Col>
         </Row>
       </Form>
-      {loading && (
-        <Row>
-          <Col className="text-center">
-            <img src="/830.gif" alt="loader" />
-          </Col>
-        </Row>
-      )}
       {data.length > 0 && (
         <Row className="mt-4">
           <Col className="text-center">
+            <p>Latest {data.length} reports</p>
             <Table striped bordered hover>
               <thead style={{ fontWeight: "bold" }}>
                 <tr>
-                  <td>Lab Sr No</td>
+                  <td> Lab Sr No </td>
                   <td> Full Name </td>
                   <td> Date Examined </td>
                   <td> Date Expiry </td>
@@ -160,6 +151,9 @@ function FindReport() {
                   <td> Passport No </td>
                   <td> Edit </td>
                   <td> Delete </td>
+                  <td> Test Report </td>
+                  <td> Final Report </td>
+
                 </tr>
               </thead>
               <tbody>
@@ -173,11 +167,16 @@ function FindReport() {
                       <td>{doc.data().dob}</td>
                       <td>{doc.data().passport}</td>
                       <td>
-                        <Link
-                          to={`/dashboard/report?edit=${doc.data().labSrNo}`}
+                        <Button
+                          variant="primary"
                         >
-                          Edit
-                        </Link>
+                          <Link
+                            style={{ color: '#fff', textDecoration: 'none'}}
+                            to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
+                          >
+                            Edit
+                          </Link>
+                        </Button>
                       </td>
                       <td>
                         <Button
@@ -186,6 +185,24 @@ function FindReport() {
                           disabled={removing}
                         >
                           Delete
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, false)}
+                          disabled={downloading}
+                        >
+                          Download
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, true)}
+                          disabled={downloading}
+                        >
+                          Download
                         </Button>
                       </td>
                     </tr>
@@ -206,4 +223,5 @@ function FindReport() {
     </Container>
   );
 }
-export default FindReport;
+
+export default Reports;

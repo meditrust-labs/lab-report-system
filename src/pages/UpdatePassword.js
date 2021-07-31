@@ -1,32 +1,38 @@
 import React, { useState, useRef } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
 
-function Login() {
+function UpdatePassword() {
   const [error, setError] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const emailRef = useRef();
   const passwordRef = useRef();
 
-  const { login } = useAuth();
+  const { updatePassword, logout } = useAuth();
   const history = useHistory();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (
-      emailRef.current.value.length > 0 &&
-      passwordRef.current.value.length > 0
-    ) {
-      //
+    if (passwordRef.current.value.length > 0) {
+      setError("");
+      setLoading(true);
+      const id = toast.loading('Updating password...');
+      
       try {
-        setError("");
-        setLoading(true);
-        await login(emailRef.current.value, passwordRef.current.value);
-        history.push("/dashboard");
+        await updatePassword(passwordRef.current.value);
+        toast.success('Password changed successfully', { id });
+
+        setTimeout(async () => {
+          await logout();
+          history.push("/");
+        }, 1000);
       } catch (err) {
+        toast.error('An error occurred', { id });
+        console.log(err);
         setError(err.message);
       }
 
@@ -39,43 +45,31 @@ function Login() {
   return (
     <Container
       className="d-flex align-items-center justify-content-center"
-      style={{ minHeight: "100vh" }}
+      style={{ minHeight: "30vh" }}
     >
       <div className="w-100" style={{ maxWidth: "400px" }}>
-        <h2 className="text-center mb-4">Log In</h2>
         <Card>
           <Card.Body>
             {error.length > 0 && <Alert variant="danger">{error}</Alert>}
 
             <Form onSubmit={handleSubmit}>
-              <Form.Group id="email">
-                <Form.Label>Email</Form.Label>
-                <Form.Control type="email" ref={emailRef} required />
-              </Form.Group>
               <Form.Group id="password">
-                <Form.Label>Password</Form.Label>
+                <Form.Label>New Password</Form.Label>
                 <Form.Control type="password" ref={passwordRef} required />
               </Form.Group>
-
               <Button
                 className="w-100 text-center"
                 disabled={loading}
                 type="submit"
               >
-                Login
+                Update Password
               </Button>
             </Form>
           </Card.Body>
         </Card>
-        <div className="mt-4 text-center">
-          <Link to="/reset-password">Reset Password</Link>
-        </div>
-        <div className="mt-4 text-center">
-          <Link to="/signup">Create an account</Link>
-        </div>
       </div>
     </Container>
   );
 }
 
-export default Login;
+export default UpdatePassword;

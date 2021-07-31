@@ -1,36 +1,37 @@
 import React, { useState, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
+import toast from 'react-hot-toast';
 
 import { useAuth } from "../contexts/AuthContext";
 
-function UpdatePassword() {
+function Login() {
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
   const [loading, setLoading] = useState(false);
+  const emailRef = useRef();
   const passwordRef = useRef();
 
-  const { updatePassword, logout } = useAuth();
+  const { login } = useAuth();
   const history = useHistory();
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const id = toast.loading('Logging in...');
 
-    if (passwordRef.current.value.length > 0) {
-      //
+    if (
+      emailRef.current.value.length > 0 &&
+      passwordRef.current.value.length > 0
+    ) {
+
+      setError("");
+      setLoading(true);
+
       try {
-        setError("");
-        setMessage("");
-        setLoading(true);
-        await updatePassword(passwordRef.current.value);
-        setMessage("Password changed successfully ! Please login again");
-        setTimeout(async () => {
-          await logout();
-          history.push("/");
-        }, 1000);
+        await login(emailRef.current.value, passwordRef.current.value);
+        toast.success('Login successful', { id });
+        history.push("/dashboard");
       } catch (err) {
-        console.log(err);
+        toast.error('Oops an error occurred', { id });
         setError(err.message);
       }
 
@@ -43,32 +44,43 @@ function UpdatePassword() {
   return (
     <Container
       className="d-flex align-items-center justify-content-center"
-      style={{ minHeight: "30vh" }}
+      style={{ minHeight: "100vh" }}
     >
       <div className="w-100" style={{ maxWidth: "400px" }}>
+        <h2 className="text-center mb-4">Log In</h2>
         <Card>
           <Card.Body>
             {error.length > 0 && <Alert variant="danger">{error}</Alert>}
-            {message.length > 0 && <Alert variant="success">{message}</Alert>}
 
             <Form onSubmit={handleSubmit}>
+              <Form.Group id="email">
+                <Form.Label>Email</Form.Label>
+                <Form.Control type="email" ref={emailRef} required />
+              </Form.Group>
               <Form.Group id="password">
-                <Form.Label>New Password</Form.Label>
+                <Form.Label>Password</Form.Label>
                 <Form.Control type="password" ref={passwordRef} required />
               </Form.Group>
+
               <Button
                 className="w-100 text-center"
                 disabled={loading}
                 type="submit"
               >
-                Update Password
+                Login
               </Button>
             </Form>
           </Card.Body>
         </Card>
+        <div className="mt-4 text-center">
+          <Link to="/reset-password">Reset Password</Link>
+        </div>
+        <div className="mt-4 text-center">
+          <Link to="/signup">Create an account</Link>
+        </div>
       </div>
     </Container>
   );
 }
 
-export default UpdatePassword;
+export default Login;
