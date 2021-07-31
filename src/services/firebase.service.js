@@ -1,7 +1,6 @@
-import { storage, db } from '../firebase.config';
+import { storage, db, getTime } from '../firebase.config';
 import { ALLOWED_EXTNS } from '../constants';
-import { convertDate } from '../utils/date.helper';
-import { getNumericData } from '../utils/data.helper';
+import { formatFetchedData } from '../utils/data.helper';
 
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
@@ -9,15 +8,7 @@ const currentRef = db.collection("current");
 
 class ReportsApi {
     static async get() {
-        let snapshot;
-
-        try {
-            snapshot = await reportsRef.orderBy("labSrNo", "desc").limit(15).get();
-        } catch(err) {
-            console.log(err);
-        }
-
-        return snapshot;
+        return await reportsRef.orderBy("createdAt", "desc").limit(20).get();
     }
 
     static async getById(id) {
@@ -27,21 +18,7 @@ class ReportsApi {
             const doc = await reportsRef.doc(id).get();
             if (doc.exists) {
                 let data = doc.data();
-                data["dateExamined"] = convertDate(data["dateExamined"]);
-                data["dateExpiry"] = convertDate(data["dateExpiry"]);
-                data["dob"] = convertDate(data["dob"]);
-                data["doi"] = convertDate(data["doi"]);
-
-                data["weight"] = getNumericData(data["weight"]);
-                data["height"] = getNumericData(data["height"]);
-                data["urea"] = getNumericData(data["urea"]);
-                data["creatinine"] = getNumericData(data["creatinine"]);
-                data["bloodSugar"] = getNumericData(data["bloodSugar"]);
-                data["hemoglobin"] = getNumericData(data["hemoglobin"]);
-                data["bloodPressure"] = getNumericData(data["bloodPressure"]);
-                data["bloodSugar"] = getNumericData(data["bloodSugar"]);
-
-                report = data;
+                report = formatFetchedData(data);
             } else {
                 report = null;
             }
@@ -52,18 +29,18 @@ class ReportsApi {
         return report;
     }
 
-    static async update(labSrNo, formData) {
-        return await reportsRef.doc(labSrNo).update(formData);
+    static async update(formData) {
+        formData.updatedAt = getTime.serverTimestamp();
+        return await reportsRef.doc(formData.labSrNo).update(formData);
     }
 
-    static async save(current, formData) {
-        const saveData = reportsRef.doc(`MT_${current.lab + 1}`).set(formData);
-        console.log(current);
-        const updateCurrent = currentRef.doc(current.id).update({
-            lab: current.lab + 1,
-            refrence: current.refrence + 1,
+    static async save(formData) {
+        formData.createdAt = getTime.serverTimestamp();
+        const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(formData);
+        const updateCurrent = currentRef.doc(formData.id).update({
+            lab: formData.lab + 1,
+            refrence: formData.refrence + 1,
         });
-
         return await Promise.all([saveData, updateCurrent]);
     }
 
@@ -117,27 +94,17 @@ class ReportsApi {
 
     static async getCurrent() {
         let res;
-        try {
-            const querySnapshot = await currentRef.get();
-            querySnapshot.forEach((doc) => {
-                res = { id: doc.id, ...doc.data() };
-            });
-        } catch (err) {
-          console.log(err);
-        }
-
+        const querySnapshot = await currentRef.get();
+        querySnapshot.forEach((doc) => {
+            res = { id: doc.id, ...doc.data() };
+        });
         return res;
     }
 
     static async delete(photoName, id) {
-        try {
-            const deleteReport = db.collection("reports").doc(id).delete();
-            const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
-
-            await Promise.all([deleteReport, deletePhoto]);
-        } catch (err) {
-            console.log(err);
-        }
+        const deleteReport = db.collection("reports").doc(id).delete();
+        const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
+        await Promise.all([deleteReport, deletePhoto]);
     }
 }
 

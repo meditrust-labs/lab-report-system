@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
 import {
   Container,
+  Col,
   Row,
   Button,
   Alert,
-  Modal,
 } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
 import { Formik, Form, Field } from 'formik';
+import toast from 'react-hot-toast';
 
 // Layouts
 import COL from "../components/Layouts/Col";
 import Heading from "../components/Heading";
 
+
 // Helpers
 import ReportsApi from '../services/firebase.service'
 import generatePdf from "../utils/pdfLib";
 import { REPORT_FIELDS } from '../constants'
+import { formatSavingData } from '../utils/data.helper';
 
 // Forms Components
 import TextField from "../components/Form/TextField";
@@ -42,76 +45,85 @@ function CreateReport() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
-  const [show, setShow] = useState(false);
-  const closeModal = () => setShow(false);
-  const showModal = () => setShow(true);
 
   const location = useLocation();
   const history = useHistory();
-  
+
   async function saveAndGenerateReport(formData) {
     setSaving(true);
+    const id = toast.loading('Saving report ...');
 
+    const formattedFormData = formatSavingData(formData);
     try {
-      await generatePdf(formData, formData.reportCompleted);
+      await generatePdf(formattedFormData, formData.reportCompleted);
 
-      if (data.report.edit) {
-        await ReportsApi.update(data.report.labSrNo, formData);
+      if (data.edit) {
+        await ReportsApi.update(formattedFormData);
       } else {
-        await ReportsApi.save(data.report, formData);
+        await ReportsApi.save(formattedFormData);
       }
 
+      toast.success('Report saved successfully', { id });
       setError("");
-      setMessage("Report saved successfully");
-      showModal();
+      history.push("/dashboard/reports");
     } catch (err) {
+      toast.error('An error occurred while saving report, please try again', { id });
       console.log(err);
-      setMessage("");
       setError(`${err}`);
     }
 
     setSaving(false);
   }
 
-  async function fetchData() {
-      setLoading(true);
-
-      const queryParams = new URLSearchParams(location.search);
-      const labSrNo = queryParams.get("edit");
-      const editReport = (labSrNo ? true : false);
-
-      const data = ( 
-        editReport ? 
-        await ReportsApi.getById(labSrNo) : 
-        await ReportsApi.getCurrent() 
-      );
-      
-      if (data) {
-        const reportData = (
-              editReport ? 
-              data : { 
-                labSrNo: `MT_${data.lab + 1}`,
-                refrenceNo: `MT_${data.refrence + 1}`,
-                ...REPORT_FIELDS
-              }
-        ) 
-        setData({
-          report: reportData,
-          edit: editReport,
-        });
-      } else {
-        alert("Report Not Found !, Invalid Lab Sr No.");
-        history.push("/dashboard/reports");
-      }
-
-      setLoading(false);  
-  }
-
   useEffect(() => {
+    async function fetchData() {
+        setLoading(true);
+      
+        const queryParams = new URLSearchParams(location.search);
+        const labSrNo = queryParams.get("edit");
+        const editReport = (labSrNo ? true : false);
+      
+        const toastId = (editReport ?
+          toast.loading('loading report data ...') :
+          toast.loading('creating new report ...'));
+
+
+        const data = ( 
+          editReport ? 
+          await ReportsApi.getById(labSrNo) : 
+          await ReportsApi.getCurrent() 
+        );
+        
+        if (data) {
+          const reportData = (
+                editReport ? 
+                data : {
+                  id: data.id,
+                  lab: data.lab,
+                  refrence: data.refrence,
+                  labSrNo: `MT_${data.lab + 1}`,
+                  refrenceNo: `MT_${data.refrence + 1}`,
+                  ...REPORT_FIELDS
+                }
+          )
+          if (editReport)
+            toast.success('Now you can start editing your report', { id: toastId });
+          else
+            toast.success('New report created successfully', { id: toastId });
+            
+          setData({
+            report: reportData,
+            edit: editReport,
+          });
+        } else {
+          toast.error('No report found with this serial no.', { id: toastId });
+          history.push("/dashboard/reports");
+        }
+
+      setLoading(false);
+    }
     fetchData();
-  }, []);
+  },[]);
 
   return (
     <>
@@ -133,9 +145,8 @@ function CreateReport() {
             initialValues={ 
               data.report
             }
-            onSubmit={ async (values, {}) => {
-              const formattedValues = formattedValues(values);
-              await saveAndGenerateReport(formattedValues);
+            onSubmit={ async (values) => {
+              await saveAndGenerateReport(values);
             }}
           >
             <Form>
@@ -160,7 +171,7 @@ function CreateReport() {
                 <COL title="Upload Photo">
                   <FileUpload />                
                 </COL>
-                <COL> 
+                <COL title="Candidate Photo"> 
                   <DisplayPhoto />
                 </COL>
               </Row>
@@ -335,11 +346,11 @@ function CreateReport() {
                         Tick this to print final report.
                       </p>
                 </COL>
-                <COL>
+                <Col>
                   <div>
                     {error.length > 0 && <Alert variant="danger">{error}</Alert>}
                   </div>
-                </COL>
+                </Col>
               </Row>
 
               <br />
@@ -352,7 +363,6 @@ function CreateReport() {
               >
                 GENERATE REPORT
               </Button>
-              {saving && <img src="/assets/images/loader.gif" alt="loader" className="ml-4" />}
             </Form>
           </Formik>
           <br />
@@ -360,21 +370,6 @@ function CreateReport() {
           <br />
         </Container>
       )}
-
-      <Modal show={show} onHide={closeModal} backdrop="static" keyboard={false}>
-        <Modal.Body>
-          {message.length > 0 && <Alert variant="success">{message}</Alert>}
-          <Button
-            variant="primary"
-            onClick={() => {
-              history.push("/dashboard");
-              closeModal();
-            }}
-          >
-            OK
-          </Button>
-        </Modal.Body>
-      </Modal>
     </>
   );
 }

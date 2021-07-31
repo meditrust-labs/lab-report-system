@@ -6,7 +6,7 @@ export const getExpiryDate = (date) => {
     let expiryDate = add(parsedDate, { months: 3 });
     expiryDate = sub(expiryDate, { days: 1 });
     expiryDate = format(expiryDate, "yyyy-MM-dd");
-    return expiryDate
+    return expiryDate;
 }
 
 export const convertDate = (value) => {

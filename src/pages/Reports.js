@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 import ReportsApi from "../services/firebase.service";
+import generatePdf from "../utils/pdfLib";
 import { SEARCH_OPTIONS } from "../constants";
 
 function Reports() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const searchRef = useRef();
   const selectRef = useRef();
@@ -35,37 +38,63 @@ function Reports() {
 
   const deleteReport = async (id) => {
     setRemoving(true);
-
-    const photoName = data
-                      .find((report) => report.id === id)
-                      .data()
-                      .photoName;
-
-    // const api = new ReportsApi();
-    await ReportsApi.delete(photoName, id);
+    const toastId = toast.loading("Deleting report and the accociated data")
+    const { photoName }  = data.find((report) => report.id === id).data()
+    try {
+      await ReportsApi.delete(photoName, id);
+      toast.success("Report Deleted Successfully", {id: toastId});
+    }
+    catch (err) {
+      console.log(err);
+      toast.error(`${err}`, {id: toastId});
+    }
 
     const newData = data.filter((report) =>  report.id !== id);
-    
     setData(newData);
     setRemoving(false);
   };
 
+  const downloadReport = async (id, flag) => {
+    setDownloading(true);
+    const toastId = toast.loading("Downloading report")
+
+    const reportData = data.find((report) => report.id == id).data();
+    
+    try {
+      await generatePdf(reportData, flag);
+      toast.success("Report Generated Successfully", {id: toastId})
+    }
+    catch (err) {
+      console.log(err);
+      toast.error("An error occured, please try again", { id: toastId })
+    }
+
+    setDownloading(false);
+  }
+
   useEffect(() => {
     async function fetchReports() {
-      setLoading(true);
-
-      // const api = new ReportsApi();
-      const data = await ReportsApi.get();
+      const toastId = toast.loading("Loading report...");
       
-      setData(data.docs);
-      setLoading(false);
+      try {
+        const reports = await ReportsApi.get();
+        setData(reports.docs);
+        toast.success(`Fetched ${reports.docs.length} reports`, {id: toastId});
+      }
+      catch (err) {
+        console.log(err);
+        toast.error("An error occured!", {id: toastId});
+      }
     }
 
     fetchReports();
   }, []);
 
   return (
-    <Container className="pt-4 text-center">
+    <Container className="p-4 text-center" fluid>
+
+      
+
       <Form onSubmit={findReports}>
         <Row>
           <Col className="text-left">
@@ -107,16 +136,10 @@ function Reports() {
           </Col>
         </Row>
       </Form>
-      {loading && (
-        <Row>
-          <Col className="text-center">
-            <img src="/assets/images/loader.gif" alt="loader" />
-          </Col>
-        </Row>
-      )}
       {data.length > 0 && (
         <Row className="mt-4">
           <Col className="text-center">
+            <p>Latest {data.length} reports</p>
             <Table striped bordered hover>
               <thead style={{ fontWeight: "bold" }}>
                 <tr>
@@ -128,6 +151,9 @@ function Reports() {
                   <td> Passport No </td>
                   <td> Edit </td>
                   <td> Delete </td>
+                  <td> Test Report </td>
+                  <td> Final Report </td>
+
                 </tr>
               </thead>
               <tbody>
@@ -141,11 +167,16 @@ function Reports() {
                       <td>{doc.data().dob}</td>
                       <td>{doc.data().passport}</td>
                       <td>
-                        <Link
-                          to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
+                        <Button
+                          variant="primary"
                         >
-                          Edit
-                        </Link>
+                          <Link
+                            style={{ color: '#fff', textDecoration: 'none'}}
+                            to={`/dashboard/create-report?edit=${doc.data().labSrNo}`}
+                          >
+                            Edit
+                          </Link>
+                        </Button>
                       </td>
                       <td>
                         <Button
@@ -154,6 +185,24 @@ function Reports() {
                           disabled={removing}
                         >
                           Delete
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, false)}
+                          disabled={downloading}
+                        >
+                          Download
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          variant="success"
+                          onClick={() => downloadReport(doc.id, true)}
+                          disabled={downloading}
+                        >
+                          Download
                         </Button>
                       </td>
                     </tr>
