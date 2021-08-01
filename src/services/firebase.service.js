@@ -1,29 +1,43 @@
 import { storage, db, getTime } from '../firebase.config';
 import { ALLOWED_EXTNS } from '../constants';
-import { formatFetchedData } from '../utils/data.helper';
+
+import { formatFetchedData } from '@Helpers/data.helper';
 
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
-// const storageRef = storage.ref('images');
 
 class ReportsApi {
     static async get() {
         return await reportsRef.orderBy("createdAt", "desc").limit(20).get();
     }
 
+    static async searchByName(query) {
+        const querySnapshot = await reportsRef
+            .where('fullName', '>=', query)
+            .where('fullName', '<', query + 'z')
+            .get();
+        
+        return querySnapshot;
+    }
+
+    static async searchByLabSrNo(query) {
+        query = `MT_${query}`;
+        const querySnapshot = await reportsRef
+            .where('labSrNo', '>=', query)
+            .where('labSrNo', '<', query + 'z')
+            .get();
+        return querySnapshot;
+    }
+
     static async getById(id) {
         let report;
 
-        try {
-            const doc = await reportsRef.doc(id).get();
-            if (doc.exists) {
-                let data = doc.data();
-                report = formatFetchedData(data);
-            } else {
-                report = null;
-            }
-        } catch (err) {
-            console.log(err);
+        const doc = await reportsRef.doc(id).get();
+        if (doc.exists) {
+            let data = doc.data();
+            report = formatFetchedData(data);
+        } else {
+            report = null;
         }
 
         return report;
@@ -42,21 +56,6 @@ class ReportsApi {
             refrence: formData.refrence + 1,
         });
         return await Promise.all([saveData, updateCurrent]);
-    }
-
-    static async find(option, value) {
-        let querySnapshot;
-        try {
-            if (value.length === 0) {
-                querySnapshot = await this.get();
-            } else {
-                querySnapshot = await reportsRef.where(option, "==", value).get();
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        return querySnapshot;
     }
 
     static async upload(photo) {
