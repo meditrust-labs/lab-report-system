@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from "@Contexts/AuthContext";
 import { PrivateRoute } from "@Components";
@@ -11,32 +11,20 @@ import Login from "@Pages/Login";
 import Dashboard from "@Pages/Dashboard";
 import ResetPassword from "@Pages/ResetPassword";
 
-import { 
-  TEST_REPORT_URL, 
-  FINAL_REPORT_URL, 
-  STAMP_URL, 
-  CACHE_NAME 
-} from "../constants";
+import { cacheDataOnLoad } from '@Helpers/cache.helper'
 
 function App() {
   const [loading, setLoading] = useState(true);
 
   const cacheData = async () => {
     setLoading(true);
+    const id = toast.loading('loading resources ...')
     try {
-      const cacheStorage = await caches.open(CACHE_NAME);
-      const keys = await cacheStorage.keys();
-      if (keys.length < 3) {
-        await cacheStorage.addAll([
-          TEST_REPORT_URL,
-          FINAL_REPORT_URL,
-          STAMP_URL
-        ]);
-      }
-    } catch (err) {
-      console.log("Caching Error => ", err);
+      await cacheDataOnLoad();
+      toast.success('You are ready to go', { id });
+    } catch (e) {
+      toast.error('please reload the page', { id });
     }
-
     setLoading(false);
   };
 

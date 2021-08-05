@@ -9,7 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import toast from 'react-hot-toast';
 
-import generatePdf from "@Helpers/pdfLib";
+import GeneratePDF from "@Helpers/pdf.helper";
 import ReportsApi from "@Services/firebase.service";
 
 export default function TableView({ data, updateData }) {
@@ -39,7 +39,7 @@ export default function TableView({ data, updateData }) {
 
         const reportData = data.find((report) => report.id === id).data();
         try {
-            await generatePdf(reportData, flag);
+            await GeneratePDF(reportData, flag);
             toast.success("Report Generated Successfully", {id: toastId})
         }
         catch (err) {
