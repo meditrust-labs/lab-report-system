@@ -8,13 +8,14 @@ const currentRef = db.collection("current");
 
 class ReportsApi {
     static async get() {
-        return await reportsRef.orderBy("createdAt", "desc").limit(20).get();
+        return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
     }
 
     static async searchByName(query) {
         const querySnapshot = await reportsRef
             .where('fullName', '>=', query)
             .where('fullName', '<', query + 'z')
+            .limit(10)
             .get();
         
         return querySnapshot;
@@ -25,6 +26,7 @@ class ReportsApi {
         const querySnapshot = await reportsRef
             .where('labSrNo', '>=', query)
             .where('labSrNo', '<', query + 'z')
+            .limit(5)
             .get();
         return querySnapshot;
     }
