@@ -1,44 +1,14 @@
 import { PDFDocument } from "pdf-lib";
 
+import { fetchCachedData } from '@Helpers/cache.helper'
 import { 
   TEST_REPORT_URL, 
   FINAL_REPORT_URL, 
   STAMP_URL, 
-  CACHE_NAME,
   EXCLUDED_FIELDS
 } from "../constants";
 
-async function fetchAndCacheData(url) {
-  let cache;
-  return caches
-    .open(CACHE_NAME)
-    .then((cacheStorage) => {
-      cache = cacheStorage;
-      return cacheStorage.add(url);
-    })
-    .then((someReponse) => {
-      return cache.match(url);
-    })
-    .then((cachedResponse) => cachedResponse);
-}
-
-async function fetchCachedData(url) {
-  return caches
-    .open(CACHE_NAME)
-    .then((cacheStorage) => {
-      return cacheStorage.match(url);
-    })
-    .then((cachedResponse) => {
-      if (!cachedResponse || !cachedResponse.ok) {
-        console.log("fetch and save data");
-        return fetchAndCacheData(url);
-      }
-      return cachedResponse;
-    })
-    .catch((err) => console.log(err));
-}
-
-async function generatePDF(formData, flag) {
+async function GeneratePDF(formData, flag) {
   const formUrl = flag
     ? FINAL_REPORT_URL
     : TEST_REPORT_URL;
@@ -109,4 +79,4 @@ async function generatePDF(formData, flag) {
   return;
 }
 
-export default generatePDF;
+export default GeneratePDF;

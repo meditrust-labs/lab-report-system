@@ -21,7 +21,7 @@ import {
 import ReportsApi from '@Services/firebase.service'
 
 // Helpers
-import generatePdf from "@Helpers/pdfLib";
+import GeneratePDF from "@Helpers/pdf.helper";
 import { formatSavingData } from '@Helpers/data.helper';
 
 // Constants
@@ -47,7 +47,7 @@ function CreateReport() {
 
     const formattedFormData = formatSavingData(formData);
     try {
-      await generatePdf(formattedFormData, formData.reportCompleted);
+      await GeneratePDF(formattedFormData, formData.reportCompleted);
 
       if (data.edit) {
         await ReportsApi.update(formattedFormData);
