@@ -3,9 +3,8 @@ import { useFormikContext } from 'formik';
 import { Button, Form, Alert } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 
-import ReportsApi from '../../services/firebase.service'
+import ReportsApi from '@Services/firebase.service'
 
-// Test Content
 const FileUpload = () => {
     const [photo, setPhoto] = useState(null);
     const [error, setError] = useState('');

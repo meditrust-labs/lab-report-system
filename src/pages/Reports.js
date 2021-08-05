@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import toast from 'react-hot-toast';
 
-import TableView from '@Components/TableView'
+import { TableView } from '@Components'
 import ReportsApi from "@Services/firebase.service";
 import { SEARCH_OPTIONS } from "../constants";
 

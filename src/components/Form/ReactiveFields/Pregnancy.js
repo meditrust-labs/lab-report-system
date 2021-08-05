@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFormikContext } from "formik";
 
-import TextField from "../TextField";
+import TextField from "@Form/TextField";
 
 const Pregnancy = () => {
     const { 

@@ -2,20 +2,20 @@ import { Switch, useRouteMatch } from "react-router-dom";
 
 import {
   PrivateRoute,
-  Layout,
   QuickAccessButtons
-} from "../components/index";
+} from "@Components/";
 
-import UpdatePassword from './UpdatePassword'
-import CreateReport from './CreateReport'
-import Reports from './Reports'
+import AppLayout from "@Layouts/AppLayout"
+import UpdatePassword from '@Pages/UpdatePassword'
+import CreateReport from '@Pages/CreateReport'
+import Reports from '@Pages/Reports'
 
 
 function Dashboard() {
   let { path } = useRouteMatch();
 
   return (
-    <Layout>
+    <AppLayout>
       <Switch>
         <PrivateRoute exact path={path} component={QuickAccessButtons} />
         <PrivateRoute
@@ -26,7 +26,7 @@ function Dashboard() {
         <PrivateRoute exact path={`${path}/create-report`} component={CreateReport} />
         <PrivateRoute exact path={`${path}/reports`} component={Reports} />
       </Switch>
-    </Layout>
+    </AppLayout>
   );
 }
 

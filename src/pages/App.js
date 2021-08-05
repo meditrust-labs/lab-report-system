@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Toaster } from 'react-hot-toast';
 
-import { AuthProvider } from "../contexts/AuthContext";
-import { PrivateRoute } from "../components/index";
+import { AuthProvider } from "@Contexts/AuthContext";
+import { PrivateRoute } from "@Components";
 
-import Login from "./Login";
-import Dashboard from "./Dashboard";
-import ResetPassword from "./ResetPassword";
-
+import Signup from '@Pages/Signup'
+import Login from "@Pages/Login";
+import Dashboard from "@Pages/Dashboard";
+import ResetPassword from "@Pages/ResetPassword";
 
 import { 
   TEST_REPORT_URL, 
@@ -59,7 +59,7 @@ function App() {
               <Route exact path="/" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <Route path="/reset-password" component={ResetPassword} />
-              {/* <Route path="/signup" component={Signup} /> */}
+              <Route path="/signup" component={Signup} />
             </Switch>
           </AuthProvider>
         </Router>

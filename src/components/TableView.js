@@ -9,15 +9,14 @@ import {
 import { Link } from "react-router-dom";
 import toast from 'react-hot-toast';
 
-import generatePdf from "../utils/pdfLib";
-import ReportsApi from "../services/firebase.service";
+import generatePdf from "@Helpers/pdfLib";
+import ReportsApi from "@Services/firebase.service";
 
 export default function TableView({ data, updateData }) {
-    const [removing, setRemoving] = useState(false);
-    const [downloading, setDownloading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const deleteReport = async (id) => {
-        setRemoving(true);
+        setLoading(true);
         const toastId = toast.loading("Deleting report and the accociated data")
         const { photoName }  = data.find((report) => report.id === id).data()
         try {
@@ -31,14 +30,14 @@ export default function TableView({ data, updateData }) {
 
         const newData = data.filter((report) =>  report.id !== id);
         updateData(newData);
-        setRemoving(false);
+        setLoading(false);
     };
 
     const downloadReport = async (id, flag) => {
-        setDownloading(true);
+        setLoading(true);
         const toastId = toast.loading("generating report...")
 
-        const reportData = data.find((report) => report.id == id).data();
+        const reportData = data.find((report) => report.id === id).data();
         try {
             await generatePdf(reportData, flag);
             toast.success("Report Generated Successfully", {id: toastId})
@@ -48,7 +47,7 @@ export default function TableView({ data, updateData }) {
             toast.error("An error occured, please try again", { id: toastId })
         }
 
-        setDownloading(false);
+        setLoading(false);
     }
 
     return (
@@ -107,7 +106,7 @@ export default function TableView({ data, updateData }) {
                                 <Button
                                 variant="danger"
                                 onClick={() => deleteReport(doc.id)}
-                                disabled={removing}
+                                disabled={loading}
                                 >
                                 Delete
                                 </Button>
@@ -116,7 +115,7 @@ export default function TableView({ data, updateData }) {
                                 <Button
                                 variant="success"
                                 onClick={() => downloadReport(doc.id, false)}
-                                disabled={downloading}
+                                disabled={loading}
                                 >
                                 Download
                                 </Button>
@@ -125,7 +124,7 @@ export default function TableView({ data, updateData }) {
                                 <Button
                                 variant="success"
                                 onClick={() => downloadReport(doc.id, true)}
-                                disabled={downloading}
+                                disabled={loading}
                                 >
                                 Download
                                 </Button>
