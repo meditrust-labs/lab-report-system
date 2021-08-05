@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { Navbar, Nav, Button, Container, Modal } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  Button,
+  Container
+} from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 import toast from 'react-hot-toast';
 
-import { useAuth } from "../contexts/AuthContext";
-import { db } from "../firebase.config";
+import { UpdateReferenceModal } from '@Components'
+import { useAuth } from "@Contexts/AuthContext";
 
 export default function NavigationBar() {
   const { logout } = useAuth();
@@ -16,28 +21,9 @@ export default function NavigationBar() {
   const closeModal = () => setShow(false);
   const showModal = () => setShow(true);
 
-  async function updateRefrence() {
-    setLoading(true);
-    const id = toast.loading('Updating reference ...');
-
-    try {
-      const snapshot = await db.collection("current").get();
-      const docId = snapshot.docs[0].id;
-      await db.collection("current").doc(docId).update({ refrence: 0 });
-
-      toast.success('Reference updated successfully', { id });
-    } catch (err) {
-      toast.error('An error occurred', { id });
-      console.log(err);
-    }
-
-    closeModal();
-    history.push("/dashboard");
-    setLoading(false);
-  }
-
   async function handleLogout() {
-    const id = toast.loading('Logging you out!');
+    setLoading(true);
+    const id = toast.loading('Logging out!');
 
     try {
       await logout();
@@ -47,6 +33,7 @@ export default function NavigationBar() {
       console.log(err);
     }
 
+    setLoading(false);
     history.push("/");
   }
 
@@ -56,7 +43,7 @@ export default function NavigationBar() {
         <Container fluid>
           <Navbar.Brand>
             <img
-              alt=""
+              alt="brand"
               src="/assets/images/logo.png"
               width="30"
               height="30"
@@ -76,6 +63,7 @@ export default function NavigationBar() {
             </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
+           
             <Button
               className="btn btn-primary"
               style={{ marginRight: "1rem" }}
@@ -106,39 +94,30 @@ export default function NavigationBar() {
             >
               Change Password
             </Link>
-            <Button onClick={showModal}>Reset Refrence</Button>
+
+            <Button
+              onClick={showModal}
+            >
+              Reset Refrence
+            </Button>
+
             <Button
               variant="primary"
               onClick={handleLogout}
               style={{ marginLeft: "1rem" }}
+              disabled={loading}
             >
               Logout
             </Button>
+
           </Nav>
         </Container>
       </Navbar>
-
-      <Modal show={show} onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Reset Refrence</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Do you really want to reset refrence value to 0? This action can't be
-          reversed !
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={updateRefrence}
-            disabled={loading}
-          >
-            Reset Refrence
-          </Button>
-          <Button variant="primary" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      
+      <UpdateReferenceModal
+        show={show}
+        closeModal={closeModal}
+      />
     </>
   );
 }

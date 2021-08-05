@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
+import toast from 'react-hot-toast';
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@Contexts/AuthContext";
 
 function Signup() {
   const [error, setError] = useState("");
@@ -16,15 +17,27 @@ function Signup() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    try {
+    if (
+      emailRef.current.value.length > 0 &&
+      passwordRef.current.value.length > 0
+    ) {
       setError("");
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
-      history.push("/");
-    } catch (err) {
-      setError(err.message);
-    }
+      const id = toast.loading('creating account...');
 
+      try {
+        await signup(emailRef.current.value, passwordRef.current.value);
+        toast.success('Signup successful', { id });
+        history.push("/dashboard");
+      } catch (err) {
+        toast.error('Oops an error occurred, try again!', { id });
+        setError(err.message);
+      }
+
+      setLoading(false);
+    } else {
+      setError("please fill the empty fields");
+    }
     setLoading(false);
   }
 

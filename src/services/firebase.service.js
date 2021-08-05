@@ -101,9 +101,15 @@ class ReportsApi {
     }
 
     static async delete(photoName, id) {
-        const deleteReport = db.collection("reports").doc(id).delete();
+        const deleteReport = reportsRef.doc(id).delete();
         const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
         await Promise.all([deleteReport, deletePhoto]);
+    }
+
+    static async resetReference() {
+        const snapshot = await currentRef.get();
+        const docId = snapshot.docs[0].id;
+        await currentRef.doc(docId).update({ refrence: 0 });
     }
 }
 

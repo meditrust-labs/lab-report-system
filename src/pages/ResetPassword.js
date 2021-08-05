@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@Contexts/AuthContext";
 
 function ResetPassword() {
   const [error, setError] = useState("");
@@ -55,13 +55,13 @@ function ResetPassword() {
                 disabled={loading}
                 type="submit"
               >
-                Reset Password
+                send password reset link
               </Button>
             </Form>
           </Card.Body>
         </Card>
         <div className="mt-4 text-center">
-          <Link to="/login">Login</Link>
+          <Link to="/">Login</Link>
         </div>
       </div>
     </Container>

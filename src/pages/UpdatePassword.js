@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
 import toast from 'react-hot-toast';
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@Contexts/AuthContext";
 
 function UpdatePassword() {
   const [error, setError] = useState("");

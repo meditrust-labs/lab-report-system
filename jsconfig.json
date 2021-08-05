@@ -5,6 +5,12 @@
             "@Components/*": [
                 "src/components/*"
             ],
+            "@Form/*": [
+                "src/components/Form/*"
+            ],
+            "@Layouts/*": [
+                "src/components/Layouts/*"
+            ],
             "@Contexts/*": [
                 "src/contexts/*"
             ],
