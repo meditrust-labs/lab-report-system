@@ -6,12 +6,24 @@ import { formatFetchedData } from '@Helpers/data.helper';
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
 
-class ReportsApi {
-    static async get() {
+const ReportsApi = {
+    get,
+    searchByName,
+    searchByLabSrNo,
+    getById,
+    update,
+    save,
+    upload,
+    getCurrent,
+    delete: _delete,
+    resetReference,
+}
+
+async function get() {
         return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
     }
 
-    static async searchByName(query) {
+async function searchByName(query) {
         const querySnapshot = await reportsRef
             .where('fullName', '>=', query)
             .where('fullName', '<', query + 'z')
@@ -21,7 +33,7 @@ class ReportsApi {
         return querySnapshot;
     }
 
-    static async searchByLabSrNo(query) {
+async function searchByLabSrNo(query) {
         query = `MT_${query}`;
         const querySnapshot = await reportsRef
             .where('labSrNo', '>=', query)
@@ -31,7 +43,7 @@ class ReportsApi {
         return querySnapshot;
     }
 
-    static async getById(id) {
+async function getById(id) {
         let report;
 
         const doc = await reportsRef.doc(id).get();
@@ -45,12 +57,12 @@ class ReportsApi {
         return report;
     }
 
-    static async update(formData) {
+async function update(formData) {
         formData.updatedAt = getTime.serverTimestamp();
         return await reportsRef.doc(formData.labSrNo).update(formData);
     }
 
-    static async save(formData) {
+async function save(formData) {
         formData.createdAt = getTime.serverTimestamp();
         const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(formData);
         const updateCurrent = currentRef.doc(formData.id).update({
@@ -60,7 +72,7 @@ class ReportsApi {
         return await Promise.all([saveData, updateCurrent]);
     }
 
-    static async upload(photo) {
+async function upload(photo) {
         return new Promise((resolve, reject) => {
                 if (!photo) {
                     reject("Please select a file");
@@ -93,7 +105,7 @@ class ReportsApi {
         })
     }
 
-    static async getCurrent() {
+async function getCurrent() {
         let res;
         const querySnapshot = await currentRef.get();
         querySnapshot.forEach((doc) => {
@@ -102,17 +114,16 @@ class ReportsApi {
         return res;
     }
 
-    static async delete(photoName, id) {
+async function _delete(photoName, id) {
         const deleteReport = reportsRef.doc(id).delete();
         const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
         await Promise.all([deleteReport, deletePhoto]);
     }
 
-    static async resetReference() {
+async function resetReference() {
         const snapshot = await currentRef.get();
         const docId = snapshot.docs[0].id;
         await currentRef.doc(docId).update({ refrence: 0 });
-    }
 }
 
 export default ReportsApi;
