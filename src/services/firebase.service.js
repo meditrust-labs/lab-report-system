@@ -1,40 +1,68 @@
 import { storage, db, getTime } from '../firebase.config';
 import { ALLOWED_EXTNS } from '../constants';
-import { formatFetchedData } from '../utils/data.helper';
+
+import { formatFetchedData } from '@Helpers/data.helper';
 
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
-// const storageRef = storage.ref('images');
 
-class ReportsApi {
-    static async get() {
-        return await reportsRef.orderBy("createdAt", "desc").limit(20).get();
+const ReportsApi = {
+    get,
+    searchByName,
+    searchByLabSrNo,
+    getById,
+    update,
+    save,
+    upload,
+    getCurrent,
+    delete: _delete,
+    resetReference,
+}
+
+async function get() {
+        return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
     }
 
-    static async getById(id) {
+async function searchByName(query) {
+        const querySnapshot = await reportsRef
+            .where('fullName', '>=', query)
+            .where('fullName', '<', query + 'z')
+            .limit(10)
+            .get();
+        
+        return querySnapshot;
+    }
+
+async function searchByLabSrNo(query) {
+        query = `MT_${query}`;
+        const querySnapshot = await reportsRef
+            .where('labSrNo', '>=', query)
+            .where('labSrNo', '<', query + 'z')
+            .limit(5)
+            .get();
+        return querySnapshot;
+    }
+
+async function getById(id) {
         let report;
 
-        try {
-            const doc = await reportsRef.doc(id).get();
-            if (doc.exists) {
-                let data = doc.data();
-                report = formatFetchedData(data);
-            } else {
-                report = null;
-            }
-        } catch (err) {
-            console.log(err);
+        const doc = await reportsRef.doc(id).get();
+        if (doc.exists) {
+            let data = doc.data();
+            report = formatFetchedData(data);
+        } else {
+            report = null;
         }
 
         return report;
     }
 
-    static async update(formData) {
+async function update(formData) {
         formData.updatedAt = getTime.serverTimestamp();
         return await reportsRef.doc(formData.labSrNo).update(formData);
     }
 
-    static async save(formData) {
+async function save(formData) {
         formData.createdAt = getTime.serverTimestamp();
         const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(formData);
         const updateCurrent = currentRef.doc(formData.id).update({
@@ -44,22 +72,7 @@ class ReportsApi {
         return await Promise.all([saveData, updateCurrent]);
     }
 
-    static async find(option, value) {
-        let querySnapshot;
-        try {
-            if (value.length === 0) {
-                querySnapshot = await this.get();
-            } else {
-                querySnapshot = await reportsRef.where(option, "==", value).get();
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        return querySnapshot;
-    }
-
-    static async upload(photo) {
+async function upload(photo) {
         return new Promise((resolve, reject) => {
                 if (!photo) {
                     reject("Please select a file");
@@ -92,7 +105,7 @@ class ReportsApi {
         })
     }
 
-    static async getCurrent() {
+async function getCurrent() {
         let res;
         const querySnapshot = await currentRef.get();
         querySnapshot.forEach((doc) => {
@@ -101,11 +114,16 @@ class ReportsApi {
         return res;
     }
 
-    static async delete(photoName, id) {
-        const deleteReport = db.collection("reports").doc(id).delete();
+async function _delete(photoName, id) {
+        const deleteReport = reportsRef.doc(id).delete();
         const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
         await Promise.all([deleteReport, deletePhoto]);
     }
+
+async function resetReference() {
+        const snapshot = await currentRef.get();
+        const docId = snapshot.docs[0].id;
+        await currentRef.doc(docId).update({ refrence: 0 });
 }
 
 export default ReportsApi;

@@ -1,11 +1,15 @@
-import PrivateRoute from "./PrivateRoute";
-import NavigationBar from "./NavigationBar";
-import Layout from './Layouts/Layout';
-import QuickAccessButtons  from './QuickAccessButtons'
+import PrivateRoute from "@Components/PrivateRoute";
+import NavigationBar from "@Components/NavigationBar";
+import QuickAccessButtons  from '@Components/QuickAccessButtons'
+import Heading  from '@Components/Heading'
+import TableView  from '@Components/TableView'
+import UpdateReferenceModal  from '@Components/UpdateReferenceModal'
 
 export {
-  PrivateRoute,
-  NavigationBar,
-  Layout,
-  QuickAccessButtons
+    PrivateRoute,
+    NavigationBar,
+    QuickAccessButtons,
+    Heading,
+    TableView,
+    UpdateReferenceModal,
 };

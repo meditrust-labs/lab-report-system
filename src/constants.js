@@ -22,11 +22,7 @@ export const EXCLUDED_FIELDS = [
 
 export const SEARCH_OPTIONS = {
     "Lab Sr No." : "labSrNo",
-    "Examined Date": "dateExamined",
-    "Expiry Date": "dateExpiry",
     "Full Name": "fullName",
-    "Date of birth": "dob",
-    "Passport": "passport",
 };
 
 export const REPORT_FIELDS = {

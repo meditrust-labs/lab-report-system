@@ -3,7 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
 import toast from 'react-hot-toast';
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@Contexts/AuthContext";
 
 function Login() {
   const [error, setError] = useState("");
@@ -16,15 +16,14 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const id = toast.loading('Logging in...');
 
     if (
       emailRef.current.value.length > 0 &&
       passwordRef.current.value.length > 0
     ) {
-
       setError("");
       setLoading(true);
+      const id = toast.loading('Logging in...');
 
       try {
         await login(emailRef.current.value, passwordRef.current.value);
@@ -54,12 +53,24 @@ function Login() {
 
             <Form onSubmit={handleSubmit}>
               <Form.Group id="email">
-                <Form.Label>Email</Form.Label>
-                <Form.Control type="email" ref={emailRef} required />
+                <Form.Label>
+                  Email
+                </Form.Label>
+                <Form.Control
+                  type="email"
+                  ref={emailRef}
+                  required
+                />
               </Form.Group>
               <Form.Group id="password">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" ref={passwordRef} required />
+                <Form.Label>
+                  Password
+                  </Form.Label>
+                <Form.Control
+                  type="password"
+                  ref={passwordRef}
+                  required
+                />
               </Form.Group>
 
               <Button
@@ -72,9 +83,11 @@ function Login() {
             </Form>
           </Card.Body>
         </Card>
+
         <div className="mt-4 text-center">
-          <Link to="/reset-password">Reset Password</Link>
+          <Link to="/reset-password">Forgot Password?</Link>
         </div>
+        
         <div className="mt-4 text-center">
           <Link to="/signup">Create an account</Link>
         </div>
