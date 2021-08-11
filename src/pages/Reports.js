@@ -29,7 +29,12 @@ export default function Reports() {
       result = await ReportsApi.searchByLabSrNo(query);
     else if (option === 'fullName')
       result = await ReportsApi.searchByName(query);
-      
+    else if (option === 'passport')
+      result = await ReportsApi.searchByPassportNo(query);
+    else if (option === 'dateExamined')
+      result = await ReportsApi.searchByExaminedDate(query);
+    
+    
     if (!result.empty) {
       setData(result.docs);
     } else {

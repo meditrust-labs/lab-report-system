@@ -10,6 +10,8 @@ const ReportsApi = {
     get,
     searchByName,
     searchByLabSrNo,
+    searchByPassportNo,
+    searchByExaminedDate,
     getById,
     update,
     save,
@@ -31,7 +33,26 @@ async function searchByName(query) {
             .get();
         
         return querySnapshot;
-    }
+}
+
+async function searchByPassportNo(query) {
+        const querySnapshot = await reportsRef
+            .where('passport', '>=', query)
+            .where('passport', '<', query + 'z')
+            .limit(10)
+            .get();
+        
+        return querySnapshot;
+}
+
+async function searchByExaminedDate(query) {
+        const querySnapshot = await reportsRef
+            .where('dateExamined', '>=', query)
+            .where('dateExamined', '<', query + 'z')
+            .get();
+        
+        return querySnapshot;
+}
 
 async function searchByLabSrNo(query) {
         query = `MT_${query}`;
