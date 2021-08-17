@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { AuthProvider } from "@Contexts/AuthContext";
 import { PrivateRoute } from "@Components";
 
-import Signup from '@Pages/Signup'
+//import Signup from '@Pages/Signup'
 import Login from "@Pages/Login";
 import Dashboard from "@Pages/Dashboard";
 import ResetPassword from "@Pages/ResetPassword";
@@ -47,7 +47,6 @@ function App() {
               <Route exact path="/" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <Route path="/reset-password" component={ResetPassword} />
-              <Route path="/signup" component={Signup} />
             </Switch>
           </AuthProvider>
         </Router>
