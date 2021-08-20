@@ -3,7 +3,7 @@ export const BASE_URL =
 
 export const TEST_REPORT_URL = BASE_URL + "/reports/test-report.pdf";
 export const FINAL_REPORT_URL = BASE_URL + "/reports/final-report.pdf";
-export const STAMP_URL =  BASE_URL + "/images/stamp.png";
+export const STAMP_URL = BASE_URL + "/images/stamp.png";
 export const CACHE_NAME = "meditrust_app";
 
 export const ALLOWED_EXTNS = /(\.jpg|\.jpeg)$/i;
@@ -17,104 +17,103 @@ export const EXCLUDED_FIELDS = [
   "lab",
   "refrence",
   "updatedAt",
-  "createdAt"
-]
+  "createdAt",
+];
 
 export const SEARCH_OPTIONS = {
-    "Lab Sr No." : "labSrNo",
-    "Full Name": "fullName",
-    "Passport No": "passport",
-    "Examined Date": "dateExamined",
+  "Lab Sr No.": "labSrNo",
+  "Full Name": "fullName",
+  "Passport No": "passport",
+  "Examined Date": "dateExamined",
 };
 
 export const REPORT_FIELDS = {
   // Candidate Information
-  dateExamined:  '', // convertDate(dateExaminedRef.current.value),
-  dateExpiry: '', // convertDate(dateExpiryRef.current.value),
+  dateExamined: "",
+  dateExpiry: "",
 
-  photoName: '', // unique name of photo
-  candidatePhoto: '', // url of photo
+  photoName: "",
+  candidatePhoto: "",
 
-  fullName: '',   // uppercase
-  age: '',
-  gender: '',
-  height: '', // heightRef.current.value.length > 0 ? heightRef.current.value + " cm" : "",
+  fullName: "",
+  age: "",
+  gender: "",
+  height: "",
 
-  weight: '', // weightRef.current.value.length > 0 ? weightRef.current.value + " kg" : "",
-  maritalStatus: '',
-  dob: '', // convertDate(dobRef.current.value),
-  doi: '', // convertDate(doiRef.current.value),
+  weight: "",
+  maritalStatus: "",
+  dob: "",
+  doi: "",
 
-  nationality: '',
-  passport: '', // uppercase
-  poi: '',  
-  post: '',
-  
+  nationality: "",
+  passport: "",
+  poi: "",
+  post: "",
+
   // MEDICAL EXAMINATION
   // -> eyes
-  visionRightEye: '',
-  otherRightEye: 'NAD',
-  visionLeftEye: '',
-  otherLeftEye: 'NAD',
-  
+  visionRightEye: "",
+  otherRightEye: "NAD",
+  visionLeftEye: "",
+  otherLeftEye: "NAD",
+
   // -> ears
-  rightEar: 'NAD',
-  leftEar: 'NAD',
-  
+  rightEar: "NAD",
+  leftEar: "NAD",
+
   // -> systematic exam
-  bloodPressure: '', // add mm Hg
-  heart: '',
-  lungs: '',
-  abdomen: '',
+  bloodPressure: "",
+  heart: "",
+  lungs: "",
+  abdomen: "",
 
   // -> venereal diseases (clinical)
-  VDRLorTPHA: 'Non-Reactive',
+  VDRLorTPHA: "Non-Reactive",
 
   // -> chest x ray
-  chest: 'NAD',
+  chest: "NAD",
 
   // -> pregnancy
-  pregnancy: 'Not Applicable', // map it to pregnancy state
-
+  pregnancy: "Not Applicable",
 
   // LAB INVERSTIGATION
 
   // -> urine
-  sugar: 'NIL',
-  albumin: 'NIL',
-  urineBilharziasis: 'NIL',
-  urineOthers: '',
+  sugar: "NIL",
+  albumin: "NIL",
+  urineBilharziasis: "NIL",
+  urineOthers: "",
 
   // -> blood
-  hemoglobin: '', // add gm %
-  malariaFilm: 'Not Seen',
-  microFilaria: 'Non-Reactive',
-  bloodGroup: '',
-  bloodOthers: '',
+  hemoglobin: "",
+  malariaFilm: "Not Seen",
+  microFilaria: "Non-Reactive",
+  bloodGroup: "",
+  bloodOthers: "",
 
   // -> Stool
-  helminths: 'Not Seen',
-  stoolBilharziasis: 'Not Seen',
-  salmonellaShigella: 'NAD',
-  cholera: 'NAD',
+  helminths: "Not Seen",
+  stoolBilharziasis: "Not Seen",
+  salmonellaShigella: "NAD",
+  cholera: "NAD",
 
-  // -> serology 
-  hiv: 'Non-Reactive',
-  hbsag: 'Non-Reactive',
-  antiHCV: 'Non-Reactive',
-  lft: 'Normal',
+  // -> serology
+  hiv: "Non-Reactive",
+  hbsag: "Non-Reactive",
+  antiHCV: "Non-Reactive",
+  lft: "Normal",
 
   // -> serology (mg/dl)
-  urea: '', 
-  creatinine: '',
-  bloodSugar: '',
-  kft: 'Normal',
+  urea: "",
+  creatinine: "",
+  bloodSugar: "",
+  kft: "Normal",
 
   // -> covid
-  covid: '',
+  covid: "",
 
   // -> remarks
-  fit: '',
-  remarks: '',
+  fit: "",
+  remarks: "",
   reportCompleted: false,
-}
+};
