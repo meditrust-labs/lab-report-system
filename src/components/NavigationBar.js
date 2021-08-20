@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import {
-  Navbar,
-  Nav,
-  Button,
-  Container
-} from "react-bootstrap";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
-import { UpdateReferenceModal } from '@Components'
+import { UpdateReferenceModal } from "@Components";
 import { useAuth } from "@Contexts/AuthContext";
 
 export default function NavigationBar() {
@@ -23,13 +18,13 @@ export default function NavigationBar() {
 
   async function handleLogout() {
     setLoading(true);
-    const id = toast.loading('Logging out!');
+    const id = toast.loading("Logging out!");
 
     try {
       await logout();
-      toast.success('Logged out', { id });
+      toast.success("Logged out", { id });
     } catch (err) {
-      toast.error('An error occurred', { id });
+      toast.error("An error occurred", { id });
       console.log(err);
     }
 
@@ -63,7 +58,6 @@ export default function NavigationBar() {
             </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
-           
             <Button
               className="btn btn-primary"
               style={{ marginRight: "1rem" }}
@@ -95,11 +89,7 @@ export default function NavigationBar() {
               Change Password
             </Link>
 
-            <Button
-              onClick={showModal}
-            >
-              Reset Refrence
-            </Button>
+            <Button onClick={showModal}>Reset Refrence</Button>
 
             <Button
               variant="primary"
@@ -109,15 +99,11 @@ export default function NavigationBar() {
             >
               Logout
             </Button>
-
           </Nav>
         </Container>
       </Navbar>
-      
-      <UpdateReferenceModal
-        show={show}
-        closeModal={closeModal}
-      />
+
+      <UpdateReferenceModal show={show} closeModal={closeModal} />
     </>
   );
 }

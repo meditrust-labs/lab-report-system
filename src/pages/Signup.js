@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 import { useAuth } from "@Contexts/AuthContext";
 
@@ -23,14 +23,14 @@ function Signup() {
     ) {
       setError("");
       setLoading(true);
-      const id = toast.loading('creating account...');
+      const id = toast.loading("creating account...");
 
       try {
         await signup(emailRef.current.value, passwordRef.current.value);
-        toast.success('Signup successful', { id });
+        toast.success("Signup successful", { id });
         history.push("/dashboard");
       } catch (err) {
-        toast.error('Oops an error occurred, try again!', { id });
+        toast.error("Oops an error occurred, try again!", { id });
         setError(err.message);
       }
 

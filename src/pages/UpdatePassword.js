@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { Card, Form, Button, Alert, Container } from "react-bootstrap";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 import { useAuth } from "@Contexts/AuthContext";
 
@@ -20,18 +20,18 @@ function UpdatePassword() {
     if (passwordRef.current.value.length > 0) {
       setError("");
       setLoading(true);
-      const id = toast.loading('Updating password...');
-      
+      const id = toast.loading("Updating password...");
+
       try {
         await updatePassword(passwordRef.current.value);
-        toast.success('Password changed successfully', { id });
+        toast.success("Password changed successfully", { id });
 
         setTimeout(async () => {
           await logout();
           history.push("/");
         }, 1000);
       } catch (err) {
-        toast.error('An error occurred', { id });
+        toast.error("An error occurred", { id });
         console.log(err);
         setError(err.message);
       }

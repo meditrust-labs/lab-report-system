@@ -1,31 +1,15 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "paths": {
-            "@Components/*": [
-                "src/components/*"
-            ],
-            "@Form/*": [
-                "src/components/Form/*"
-            ],
-            "@Layouts/*": [
-                "src/components/Layouts/*"
-            ],
-            "@Contexts/*": [
-                "src/contexts/*"
-            ],
-            "@Pages/*": [
-                "src/pages/*"
-            ],
-            "@Services/*": [
-                "src/services/*"
-            ],
-            "@Helpers/*": [
-                "src/utils/*"
-            ]
-        }
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@Components/*": ["src/components/*"],
+      "@Form/*": ["src/components/Form/*"],
+      "@Layouts/*": ["src/components/Layouts/*"],
+      "@Contexts/*": ["src/contexts/*"],
+      "@Pages/*": ["src/pages/*"],
+      "@Services/*": ["src/services/*"],
+      "@Helpers/*": ["src/utils/*"]
+    }
+  },
+  "exclude": ["node_modules"]
 }

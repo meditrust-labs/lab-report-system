@@ -1,25 +1,9 @@
+import { formatFetchedData } from "@Helpers/data.helper";
 import { storage, db, getTime } from "../firebase.config";
 import { ALLOWED_EXTNS } from "../constants";
 
-import { formatFetchedData } from "@Helpers/data.helper";
-
 const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
-
-const ReportsApi = {
-  get,
-  searchByName,
-  searchByLabSrNo,
-  searchByPassportNo,
-  searchByExaminedDate,
-  getById,
-  update,
-  save,
-  upload,
-  getCurrent,
-  delete: _delete,
-  resetReference,
-};
 
 async function get() {
   return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
@@ -28,7 +12,7 @@ async function get() {
 async function searchByName(query) {
   const querySnapshot = await reportsRef
     .where("fullName", ">=", query)
-    .where("fullName", "<", query + "z")
+    .where("fullName", "<", `${query}z`)
     .limit(10)
     .get();
 
@@ -38,7 +22,7 @@ async function searchByName(query) {
 async function searchByPassportNo(query) {
   const querySnapshot = await reportsRef
     .where("passport", ">=", query)
-    .where("passport", "<", query + "z")
+    .where("passport", "<", `${query}z`)
     .limit(10)
     .get();
 
@@ -48,17 +32,17 @@ async function searchByPassportNo(query) {
 async function searchByExaminedDate(query) {
   const querySnapshot = await reportsRef
     .where("dateExamined", ">=", query)
-    .where("dateExamined", "<", query + "z")
+    .where("dateExamined", "<", `${query}z`)
     .get();
 
   return querySnapshot;
 }
 
 async function searchByLabSrNo(query) {
-  query = `MT_${query}`;
+  const newQuery = `MT_${query}`;
   const querySnapshot = await reportsRef
-    .where("labSrNo", ">=", query)
-    .where("labSrNo", "<", query + "z")
+    .where("labSrNo", ">=", newQuery)
+    .where("labSrNo", "<", `${newQuery}z`)
     .limit(5)
     .get();
   return querySnapshot;
@@ -69,7 +53,7 @@ async function getById(id) {
 
   const doc = await reportsRef.doc(id).get();
   if (doc.exists) {
-    let data = doc.data();
+    const data = doc.data();
     report = formatFetchedData(data);
   } else {
     report = null;
@@ -79,17 +63,21 @@ async function getById(id) {
 }
 
 async function update(formData) {
-  formData.updatedAt = getTime.serverTimestamp();
-  return await reportsRef.doc(formData.labSrNo).update(formData);
+  const newFormData = { ...formData };
+  newFormData.updatedAt = getTime.serverTimestamp();
+  return await reportsRef.doc(formData.labSrNo).update(newFormData);
 }
 
 async function save(formData) {
-  formData.createdAt = getTime.serverTimestamp();
-  const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(formData);
+  const newFormData = { ...formData };
+  newFormData.createdAt = getTime.serverTimestamp();
+
+  const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(newFormData);
   const updateCurrent = currentRef.doc(formData.id).update({
     lab: formData.lab + 1,
     refrence: formData.refrence + 1,
   });
+
   return await Promise.all([saveData, updateCurrent]);
 }
 
@@ -103,12 +91,12 @@ async function upload(photo) {
     }
 
     const date = new Date().toISOString();
-    const name = photo.name + "_" + date;
+    const name = `${photo.name}_${date}`;
 
     const uploadTask = storage.ref(`images/${name}`).put(photo);
     uploadTask.on(
       "state_changed",
-      (snapshot) => {},
+      () => {},
       (error) => {
         console.log(error);
         reject(error);
@@ -135,7 +123,7 @@ async function getCurrent() {
   return res;
 }
 
-async function _delete(photoName, id) {
+async function deleteReportById(photoName, id) {
   const deleteReport = reportsRef.doc(id).delete();
   const deletePhoto = storage.ref().child(`images/${photoName}`).delete();
   await Promise.all([deleteReport, deletePhoto]);
@@ -146,5 +134,20 @@ async function resetReference() {
   const docId = snapshot.docs[0].id;
   await currentRef.doc(docId).update({ refrence: 0 });
 }
+
+const ReportsApi = {
+  get,
+  searchByName,
+  searchByLabSrNo,
+  searchByPassportNo,
+  searchByExaminedDate,
+  getById,
+  update,
+  save,
+  upload,
+  getCurrent,
+  delete: deleteReportById,
+  resetReference,
+};
 
 export default ReportsApi;

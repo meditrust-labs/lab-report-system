@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Button,
-} from "react-bootstrap";
+import { Container, Row, Button } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
-import { Formik, Form } from 'formik';
-import toast from 'react-hot-toast';
+import { Formik, Form } from "formik";
+import toast from "react-hot-toast";
 
 // Report Components
 import {
@@ -15,22 +11,22 @@ import {
   MedicalExaminationFields,
   LabInvestigationFields,
   Remarks,
-} from '@Components/Report';
+} from "@Components/Report";
 
 // Firebase Service
-import ReportsApi from '@Services/firebase.service'
+import ReportsApi from "@Services/firebase.service";
 
 // Helpers
 import GeneratePDF from "@Helpers/pdf.helper";
-import { formatSavingData } from '@Helpers/data.helper';
+import { formatSavingData } from "@Helpers/data.helper";
 
 // Constants
-import { REPORT_FIELDS } from '../constants'
+import { REPORT_FIELDS } from "../constants";
 
 function CreateReport() {
   // States related to Modal
   const [data, setData] = useState({
-    report: {...REPORT_FIELDS},
+    report: { ...REPORT_FIELDS },
     edit: false,
   });
 
@@ -43,7 +39,7 @@ function CreateReport() {
 
   async function saveAndGenerateReport(formData) {
     setSaving(true);
-    const id = toast.loading('Saving report ...');
+    const id = toast.loading("Saving report ...");
 
     const formattedFormData = formatSavingData(formData);
     try {
@@ -55,11 +51,13 @@ function CreateReport() {
         await ReportsApi.save(formattedFormData);
       }
 
-      toast.success('Report saved successfully', { id });
+      toast.success("Report saved successfully", { id });
       setError("");
       history.push("/dashboard/reports");
     } catch (err) {
-      toast.error('An error occurred while saving report, please try again', { id });
+      toast.error("An error occurred while saving report, please try again", {
+        id,
+      });
       console.log(err);
       setError(`${err}`);
     }
@@ -69,106 +67,97 @@ function CreateReport() {
 
   useEffect(() => {
     async function fetchData() {
-        setLoading(true);
-      
-        const queryParams = new URLSearchParams(location.search);
-        const labSrNo = queryParams.get("edit");
-        const editReport = (labSrNo ? true : false);
-      
-        const toastId = (editReport ?
-          toast.loading('loading report data ...') :
-          toast.loading('creating an empty report ...'));
+      setLoading(true);
 
+      const queryParams = new URLSearchParams(location.search);
+      const labSrNo = queryParams.get("edit");
+      const editReport = !!labSrNo;
 
-        const data = ( 
-          editReport ? 
-          await ReportsApi.getById(labSrNo) : 
-          await ReportsApi.getCurrent() 
-        );
-        
-        if (data) {
-          const reportData = (
-                editReport ? 
-                data : {
-                  id: data.id,
-                  lab: data.lab,
-                  refrence: data.refrence,
-                  labSrNo: `MT_${data.lab + 1}`,
-                  refrenceNo: `MT_${data.refrence + 1}`,
-                  ...REPORT_FIELDS
-                }
-          )
-          if (editReport)
-            toast.success('Now you can edit the report', { id: toastId });
-          else
-            toast.success('Go Ahead ! report is ready.', { id: toastId });
-            
-          setData({
-            report: reportData,
-            edit: editReport,
-          });
-        } else {
-          toast.error('No report found with this serial no.', { id: toastId });
-          history.push("/dashboard/reports");
-        }
+      const toastId = editReport
+        ? toast.loading("loading report data ...")
+        : toast.loading("creating an empty report ...");
+
+      const fetchedData = editReport
+        ? await ReportsApi.getById(labSrNo)
+        : await ReportsApi.getCurrent();
+
+      if (fetchedData) {
+        const reportData = editReport
+          ? fetchedData
+          : {
+              id: fetchedData.id,
+              lab: fetchedData.lab,
+              refrence: fetchedData.refrence,
+              labSrNo: `MT_${fetchedData.lab + 1}`,
+              refrenceNo: `MT_${fetchedData.refrence + 1}`,
+              ...REPORT_FIELDS,
+            };
+        if (editReport)
+          toast.success("Now you can edit the report", { id: toastId });
+        else toast.success("Go Ahead ! report is ready.", { id: toastId });
+
+        setData({
+          report: reportData,
+          edit: editReport,
+        });
+      } else {
+        toast.error("No report found with this serial no.", { id: toastId });
+        history.push("/dashboard/reports");
+      }
 
       setLoading(false);
     }
     fetchData();
-  },[]);
+  }, []);
 
   return (
     <>
       {loading ? (
         <Container className="pt-4 text-center">
-            <img src="/assets/images/loader.gif" alt="loader"/>
+          <img src="/assets/images/loader.gif" alt="loader" />
         </Container>
       ) : (
         <Container
-            style={{
-              marginBottom: '5rem'
-            }}
-            className="pt-4"
-          >
+          style={{
+            marginBottom: "5rem",
+          }}
+          className="pt-4"
+        >
           <Row className="fill-report-icon text-center justify-content-center">
-              <img
-                src="/assets/images/fill-report.png"
-                alt="fill-report-icon"
-                style={{ width: "5rem" }}
-              />
+            <img
+              src="/assets/images/fill-report.png"
+              alt="fill-report-icon"
+              style={{ width: "5rem" }}
+            />
           </Row>
 
           <Formik
-            initialValues={ 
-              data.report
-            }
-            onSubmit={ async (values) => {
+            initialValues={data.report}
+            onSubmit={async (values) => {
               await saveAndGenerateReport(values);
             }}
           >
             <Form>
               <br />
-                <SerialNoFields />
+              <SerialNoFields />
               <br />
-                <CandidateInfoFields />
+              <CandidateInfoFields />
               <br />
-                <MedicalExaminationFields />
+              <MedicalExaminationFields />
               <br />
-                <LabInvestigationFields />
+              <LabInvestigationFields />
               <br />
-                <Remarks
-                  error={error}
-                />
+              <Remarks error={error} />
               <br />
               <Button
                 disabled={saving}
                 type="submit"
                 className="px-4 py-2"
                 style={{
-                    fontSize: "1.2rem",
-                    letterSpacing: "2px",
-                    fontFamily: 'Ubuntu, sans-serif',
-                    marginTop: '2rem' 
+                  fontSize: "1.2rem",
+                  letterSpacing: "2px",
+                  fontFamily: "Ubuntu, sans-serif",
+                  marginTop: "2rem",
                 }}
               >
                 GENERATE REPORT

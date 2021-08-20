@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
-import { TableView } from '@Components'
+import { TableView } from "@Components";
 import ReportsApi from "@Services/firebase.service";
 import { SEARCH_OPTIONS } from "../constants";
 
@@ -25,16 +25,14 @@ export default function Reports() {
     }
 
     let result;
-    if (option === 'labSrNo')
-      result = await ReportsApi.searchByLabSrNo(query);
-    else if (option === 'fullName')
+    if (option === "labSrNo") result = await ReportsApi.searchByLabSrNo(query);
+    else if (option === "fullName")
       result = await ReportsApi.searchByName(query);
-    else if (option === 'passport')
+    else if (option === "passport")
       result = await ReportsApi.searchByPassportNo(query);
-    else if (option === 'dateExamined')
+    else if (option === "dateExamined")
       result = await ReportsApi.searchByExaminedDate(query);
-    
-    
+
     if (!result.empty) {
       setData(result.docs);
     } else {
@@ -42,24 +40,21 @@ export default function Reports() {
     }
 
     setLoading(false);
-    return;
   }
 
   async function fetchReports(e) {
     setLoading(true);
 
-    if (e)
-      e.preventDefault();
+    if (e) e.preventDefault();
     const toastId = toast.loading("Loading report...");
-      
+
     try {
       const reports = await ReportsApi.get();
       setData(reports.docs);
-      toast.success(`Fetched ${reports.docs.length} reports`, {id: toastId});
-    }
-    catch (err) {
+      toast.success(`Fetched ${reports.docs.length} reports`, { id: toastId });
+    } catch (err) {
       console.log(err);
-      toast.error("An error occured!", {id: toastId});
+      toast.error("An error occured!", { id: toastId });
     }
 
     setLoading(false);
@@ -75,34 +70,25 @@ export default function Reports() {
         <Row
           style={{
             justifyContent: "center",
-            marginLeft: '2rem'
+            marginLeft: "2rem",
           }}
         >
-
           <Col className="text-left" xs={2}>
             <Form.Group>
               <Form.Label
                 style={{
-                  fontWeight: "bold"
-                }}>
+                  fontWeight: "bold",
+                }}
+              >
                 Find By
               </Form.Label>
-              <Form.Control
-                as="select"
-                ref={selectRef}
-                custom
-              >
-                {Object
-                  .keys(SEARCH_OPTIONS)
-                  .map((option, index) => {
-                    return (
-                      <option
-                        value={SEARCH_OPTIONS[option]}
-                        key={index}
-                      >
-                        {option}
-                      </option>
-                    )
+              <Form.Control as="select" ref={selectRef} custom>
+                {Object.keys(SEARCH_OPTIONS).map((option) => {
+                  return (
+                    <option value={SEARCH_OPTIONS[option]} key={Math.random()}>
+                      {option}
+                    </option>
+                  );
                 })}
               </Form.Control>
             </Form.Group>
@@ -110,7 +96,7 @@ export default function Reports() {
           <Col>
             <Form.Group
               style={{
-                marginTop: "2rem  "
+                marginTop: "2rem  ",
               }}
             >
               <Form.Control
@@ -133,7 +119,7 @@ export default function Reports() {
                 letterSpacing: ".2rem",
                 fontWeight: "400",
                 textTransform: "capitalize",
-                maxwidth: '100%'
+                maxwidth: "100%",
               }}
             >
               RELOAD LATEST REPORTS
@@ -143,38 +129,32 @@ export default function Reports() {
       </Form>
       <Row
         style={{
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
-        {
-          loading &&
+        {loading && (
           <img
             src="/assets/images/search-loader.gif"
             alt="infinity"
             style={{
-              width: '2rem',
+              width: "2rem",
             }}
           />
-        }
+        )}
       </Row>
-      {
-        data.length === 0 && (
-          <Row>
-            <Col className="text-center">
-              <p>No Records Found!</p>
-            </Col>
-          </Row>
-        )
-      }
-      {
-        data.length > 0 && (
-          <TableView
-            data={data}
-            updateData={(data) => setData(data)}
-          />
-        )
-      }
-
+      {data.length === 0 && (
+        <Row>
+          <Col className="text-center">
+            <p>No Records Found!</p>
+          </Col>
+        </Row>
+      )}
+      {data.length > 0 && (
+        <TableView
+          reports={data}
+          updateData={(updatedReportsList) => setData(updatedReportsList)}
+        />
+      )}
     </Container>
   );
 }
