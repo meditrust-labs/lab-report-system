@@ -2,7 +2,7 @@ import { Switch, useRouteMatch } from "react-router-dom";
 
 import { PrivateRoute, QuickAccessButtons } from "@Components/";
 
-import AppLayout from "@Layouts/AppLayout";
+import AppLayout from "@Components/Layouts/AppLayout";
 import UpdatePassword from "@Pages/UpdatePassword";
 import CreateReport from "@Pages/CreateReport";
 import Reports from "@Pages/Reports";

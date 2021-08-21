@@ -2,7 +2,7 @@ import { Row } from "react-bootstrap";
 
 import { TextField, TextFieldWithUnit, SelectField } from "@Form";
 
-import COL from "@Layouts/Col";
+import COL from "@Components/Layouts/Col";
 import Heading from "@Components/Heading";
 
 export default function LabInvestigationFields() {

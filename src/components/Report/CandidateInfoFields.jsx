@@ -8,9 +8,9 @@ import {
   SelectField,
 } from "@Form";
 
-import { ExpiryDateField, DisplayPhoto } from "@Form/ReactiveFields";
+import { ExpiryDateField, DisplayPhoto } from "@Components/Form/ReactiveFields";
 
-import COL from "@Layouts/Col";
+import COL from "@Components/Layouts/Col";
 import Heading from "@Components/Heading";
 
 export default function CandidateInfoFields() {

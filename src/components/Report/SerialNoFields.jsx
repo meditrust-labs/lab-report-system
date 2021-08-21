@@ -1,5 +1,5 @@
-import TextField from "@Form/TextField";
-import COL from "@Layouts/Col";
+import TextField from "@Components/Form/TextField";
+import COL from "@Components/Layouts/Col";
 
 import Row from "react-bootstrap/Row";
 

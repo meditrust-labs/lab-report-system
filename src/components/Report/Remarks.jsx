@@ -3,7 +3,7 @@ import { Field } from "formik";
 
 import { TextArea, SelectField } from "@Form";
 
-import COL from "@Layouts/Col";
+import COL from "@Components/Layouts/Col";
 
 export default function Remarks({ error }) {
   return (

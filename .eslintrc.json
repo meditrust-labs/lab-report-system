@@ -17,6 +17,7 @@
     "import/no-unresolved": 0,
     "prefer-destructuring": 0,
     "no-console": 0,
-    "react/no-unescaped-entities": 0
+    "react/no-unescaped-entities": 0,
+    "react/jsx-props-no-spreading": 0
   }
 }
