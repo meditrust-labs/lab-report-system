@@ -1,12 +1,14 @@
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
+import PropTypes from "prop-types";
 
-const TextField = ({ label, ...props }) => {
+const TextField = (props) => {
+  const { label, id, name } = props;
   const [field, meta] = useField(props);
 
   return (
     <Form.Group>
-      <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
+      <Form.Label htmlFor={id || name}>{label}</Form.Label>
 
       <Form.Control type="text" {...field} {...props} />
 
@@ -15,6 +17,12 @@ const TextField = ({ label, ...props }) => {
       ) : null}
     </Form.Group>
   );
+};
+
+TextField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default TextField;

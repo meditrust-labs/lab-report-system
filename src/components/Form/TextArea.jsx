@@ -1,12 +1,15 @@
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
+import PropTypes from "prop-types";
 
-const TextArea = ({ label, ...props }) => {
+const TextArea = (props) => {
+  const { label, name, id } = props;
+
   const [field, meta] = useField(props);
 
   return (
     <Form.Group>
-      <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
+      <Form.Label htmlFor={id || name}>{label}</Form.Label>
 
       <Form.Control type="textarea" rows={2} {...field} {...props} />
 
@@ -15,6 +18,12 @@ const TextArea = ({ label, ...props }) => {
       ) : null}
     </Form.Group>
   );
+};
+
+TextArea.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default TextArea;

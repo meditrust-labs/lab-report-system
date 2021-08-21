@@ -1,7 +1,8 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Col, Card } from "react-bootstrap";
 
-export default function COL({ title, children }) {
+function COL(props) {
+  const { title, children } = props;
   return (
     <Col>
       <Card>
@@ -14,3 +15,10 @@ export default function COL({ title, children }) {
     </Col>
   );
 }
+
+COL.propTypes = {
+  children: PropTypes.element.isRequired,
+  title: PropTypes.string.isRequired,
+};
+
+export default COL;

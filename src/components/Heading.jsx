@@ -1,6 +1,7 @@
-import React from "react";
+import PropTypes from "prop-types";
 
-export default function Heading({ children }) {
+function Heading(props) {
+  const { children } = props;
   return (
     <h4
       style={{ textTransform: "uppercase" }}
@@ -10,3 +11,9 @@ export default function Heading({ children }) {
     </h4>
   );
 }
+
+Heading.propTypes = {
+  children: PropTypes.element.isRequired,
+};
+
+export default Heading;

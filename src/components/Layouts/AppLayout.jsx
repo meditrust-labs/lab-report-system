@@ -1,8 +1,10 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 import { NavigationBar } from "@Components/";
 
-export default function AppLayout({ children }) {
+function AppLayout(props) {
+  const { children } = props;
+
   return (
     <>
       <NavigationBar />
@@ -10,3 +12,9 @@ export default function AppLayout({ children }) {
     </>
   );
 }
+
+AppLayout.propTypes = {
+  children: PropTypes.element.isRequired,
+};
+
+export default AppLayout;

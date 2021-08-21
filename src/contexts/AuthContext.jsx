@@ -1,13 +1,19 @@
 import React, { useState, useContext, useEffect } from "react";
+import PropTypes from "prop-types";
+
+// Firebase Auth
 import { auth } from "../firebase.config";
 
+// Creating Auth Context
 const AuthContext = React.createContext();
 
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-export function AuthProvider({ children }) {
+export function AuthProvider(props) {
+  const { children } = props;
+
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,3 +66,7 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
+AuthProvider.propTypes = {
+  children: PropTypes.element.isRequired,
+};

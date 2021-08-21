@@ -1,17 +1,24 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Route, Redirect } from "react-router-dom";
 
 import { useAuth } from "@Contexts/AuthContext";
 
-export default function PrivateRoute({ component: Component, ...rest }) {
+function PrivateRoute(props) {
   const { currentUser } = useAuth();
+  const { component: Component, ...rest } = props;
 
   return (
     <Route
       {...rest}
-      render={(props) => {
-        return currentUser ? <Component {...props} /> : <Redirect to="/" />;
+      render={(newProps) => {
+        return currentUser ? <Component {...newProps} /> : <Redirect to="/" />;
       }}
     />
   );
 }
+
+PrivateRoute.propTypes = {
+  component: PropTypes.element.isRequired,
+};
+
+export default PrivateRoute;

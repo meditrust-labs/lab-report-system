@@ -2,17 +2,21 @@ import React, { useState } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import PropTypes from "prop-types";
 
 import GeneratePDF from "@Helpers/pdf.helper";
 import ReportsApi from "@Services/firebase.service";
+import { REPORT_FIELDS } from "../constants";
 
-export default function TableView({ reports, updateData }) {
+function TableView(props) {
+  const { reports, updateData } = props;
   const [loading, setLoading] = useState(false);
 
   const deleteReport = async (id) => {
     setLoading(true);
     const toastId = toast.loading("Deleting report and the accociated data");
     const { photoName } = reports.find((report) => report.id === id).data();
+
     try {
       await ReportsApi.delete(photoName, id);
       toast.success("Report Deleted Successfully", { id: toastId });
@@ -127,3 +131,10 @@ export default function TableView({ reports, updateData }) {
     </Container>
   );
 }
+
+TableView.propTypes = {
+  reports: PropTypes.arrayOf(PropTypes.instanceOf(REPORT_FIELDS)).isRequired,
+  updateData: PropTypes.func.isRequired,
+};
+
+export default TableView;

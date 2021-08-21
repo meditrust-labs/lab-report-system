@@ -1,11 +1,13 @@
 import { Row, Alert, Col } from "react-bootstrap";
 import { Field } from "formik";
+import PropTypes from "prop-types";
 
 import { TextArea, SelectField } from "@Form";
 
 import COL from "@Components/Layouts/Col";
 
-export default function Remarks({ error }) {
+function Remarks(props) {
+  const { error } = props;
   return (
     <Row>
       <COL title="Remarks">
@@ -29,3 +31,9 @@ export default function Remarks({ error }) {
     </Row>
   );
 }
+
+Remarks.propTypes = {
+  error: PropTypes.string.isRequired,
+};
+
+export default Remarks;

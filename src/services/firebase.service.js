@@ -6,46 +6,39 @@ const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
 
 async function get() {
-  return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
+  return reportsRef.orderBy("createdAt", "desc").limit(10).get();
 }
 
 async function searchByName(query) {
-  const querySnapshot = await reportsRef
+  return reportsRef
     .where("fullName", ">=", query)
     .where("fullName", "<", `${query}z`)
     .limit(10)
     .get();
-
-  return querySnapshot;
 }
 
 async function searchByPassportNo(query) {
-  const querySnapshot = await reportsRef
+  return reportsRef
     .where("passport", ">=", query)
     .where("passport", "<", `${query}z`)
     .limit(10)
     .get();
-
-  return querySnapshot;
 }
 
 async function searchByExaminedDate(query) {
-  const querySnapshot = await reportsRef
+  return reportsRef
     .where("dateExamined", ">=", query)
     .where("dateExamined", "<", `${query}z`)
     .get();
-
-  return querySnapshot;
 }
 
 async function searchByLabSrNo(query) {
   const newQuery = `MT_${query}`;
-  const querySnapshot = await reportsRef
+  return reportsRef
     .where("labSrNo", ">=", newQuery)
     .where("labSrNo", "<", `${newQuery}z`)
     .limit(5)
     .get();
-  return querySnapshot;
 }
 
 async function getById(id) {
@@ -65,7 +58,7 @@ async function getById(id) {
 async function update(formData) {
   const newFormData = { ...formData };
   newFormData.updatedAt = getTime.serverTimestamp();
-  return await reportsRef.doc(formData.labSrNo).update(newFormData);
+  return reportsRef.doc(formData.labSrNo).update(newFormData);
 }
 
 async function save(formData) {
@@ -78,16 +71,16 @@ async function save(formData) {
     refrence: formData.refrence + 1,
   });
 
-  return await Promise.all([saveData, updateCurrent]);
+  return Promise.all([saveData, updateCurrent]);
 }
 
 async function upload(photo) {
   return new Promise((resolve, reject) => {
     if (!photo) {
-      reject("Please select a file");
+      reject(new Error("Please select a file"));
     }
     if (!ALLOWED_EXTNS.exec(photo.name)) {
-      reject("Please upload a .jpg or .jpeg file");
+      reject(new Error("Please upload a .jpg or .jpeg file"));
     }
 
     const date = new Date().toISOString();

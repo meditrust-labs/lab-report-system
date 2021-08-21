@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useHistory } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
+import PropTypes from "prop-types";
 
+// Firebase Service
 import ReportsApi from "@Services/firebase.service";
 
-export default function UpdateReferenceModal({ show, closeModal }) {
+function UpdateReferenceModal(props) {
+  const { show, closeModal } = props;
+
   const history = useHistory();
   const [loading, setLoading] = useState(false);
 
@@ -46,3 +50,10 @@ export default function UpdateReferenceModal({ show, closeModal }) {
     </Modal>
   );
 }
+
+UpdateReferenceModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
+};
+
+export default UpdateReferenceModal;
