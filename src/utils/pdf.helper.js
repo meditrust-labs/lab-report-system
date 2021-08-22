@@ -1,17 +1,17 @@
 import { PDFDocument } from "pdf-lib";
 
-import { fetchCachedData } from '@Helpers/cache.helper'
-import { 
-  TEST_REPORT_URL, 
-  FINAL_REPORT_URL, 
-  STAMP_URL, 
-  EXCLUDED_FIELDS
+import { fetchCachedData } from "@Helpers/cache.helper";
+import {
+  TEST_REPORT_URL,
+  FINAL_REPORT_URL,
+  STAMP_URL,
+  EXCLUDED_FIELDS,
 } from "../constants";
 
+const downloadjs = require("downloadjs");
+
 async function GeneratePDF(formData, flag) {
-  const formUrl = flag
-    ? FINAL_REPORT_URL
-    : TEST_REPORT_URL;
+  const formUrl = flag ? FINAL_REPORT_URL : TEST_REPORT_URL;
 
   const photoUrl = formData.candidatePhoto;
 
@@ -32,8 +32,7 @@ async function GeneratePDF(formData, flag) {
 
   // set text fields
   Object.keys(formData).forEach((key) => {
-    if (EXCLUDED_FIELDS.indexOf(key) >= 0)
-      return;
+    if (EXCLUDED_FIELDS.indexOf(key) >= 0) return;
 
     const value = formData[key];
     const field = form.getTextField(key);
@@ -46,18 +45,16 @@ async function GeneratePDF(formData, flag) {
 
   if (flag) {
     // Set FIT/UNFIT value
-    const value = formData['fit'];
-    console.log(value);
-    const field = form.getTextField('fit-remarks');
+    const value = formData.fit;
+    const field = form.getTextField("fit-remarks");
     field.setText(value);
 
     if (value === "FIT") {
-      form.getTextField('fit').setText(value);
-      form.getTextField('unfit').setText("");
-    }
-    else if(value === "UNFIT") {
-      form.getTextField('fit').setText("");
-      form.getTextField('unfit').setText(value);
+      form.getTextField("fit").setText(value);
+      form.getTextField("unfit").setText("");
+    } else if (value === "UNFIT") {
+      form.getTextField("fit").setText("");
+      form.getTextField("unfit").setText(value);
     }
 
     // Embed the stamp
@@ -70,13 +67,7 @@ async function GeneratePDF(formData, flag) {
 
   const pdfBytes = await pdfDoc.save();
 
-  require("downloadjs")(
-    pdfBytes,
-    `Report-${formData["labSrNo"]}.pdf`,
-    "application/pdf"
-  );
-
-  return;
+  downloadjs(pdfBytes, `Report-${formData.labSrNo}.pdf`, "application/pdf");
 }
 
 export default GeneratePDF;
