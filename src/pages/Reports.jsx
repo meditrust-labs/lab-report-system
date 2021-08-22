@@ -83,9 +83,9 @@ export default function Reports() {
                 Find By
               </Form.Label>
               <Form.Control as="select" ref={selectRef} custom>
-                {Object.keys(SEARCH_OPTIONS).map((option) => {
+                {Object.keys(SEARCH_OPTIONS).map((option, index) => {
                   return (
-                    <option value={SEARCH_OPTIONS[option]} key={Math.random()}>
+                    <option value={SEARCH_OPTIONS[option]} key={index}>
                       {option}
                     </option>
                   );
@@ -96,7 +96,7 @@ export default function Reports() {
           <Col>
             <Form.Group
               style={{
-                marginTop: "2rem  ",
+                marginTop: "2rem",
               }}
             >
               <Form.Control
@@ -105,6 +105,14 @@ export default function Reports() {
                 ref={searchRef}
                 onChange={findReports}
               />
+              <Form.Label
+                style={{
+                  fontSize: 12,
+                }}
+              >
+                When searching by Lab Sr No, enter only number. Do not use MT
+                prefix.
+              </Form.Label>
             </Form.Group>
           </Col>
           <Col>

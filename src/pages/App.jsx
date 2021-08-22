@@ -7,6 +7,7 @@ import { AuthProvider } from "@Contexts/AuthContext";
 import { PrivateRoute } from "@Components";
 
 import Login from "@Pages/Login";
+import Signup from "@Pages/Signup";
 import Dashboard from "@Pages/Dashboard";
 import ResetPassword from "@Pages/ResetPassword";
 
@@ -46,6 +47,7 @@ function App() {
               <Route exact path="/" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <Route path="/reset-password" component={ResetPassword} />
+              <Route path="/signup" component={Signup} />
             </Switch>
           </AuthProvider>
         </Router>

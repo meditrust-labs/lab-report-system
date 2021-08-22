@@ -64,8 +64,8 @@ export const REPORT_FIELDS = {
   // -> systematic exam
   bloodPressure: "",
   heart: "",
-  lungs: "",
-  abdomen: "",
+  lungs: "NAD",
+  abdomen: "NAD",
 
   // -> venereal diseases (clinical)
   VDRLorTPHA: "Non-Reactive",

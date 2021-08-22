@@ -3,13 +3,13 @@ import { Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 const TextArea = (props) => {
-  const { label, name, id } = props;
+  const { label, name } = props;
 
   const [field, meta] = useField(props);
 
   return (
     <Form.Group>
-      <Form.Label htmlFor={id || name}>{label}</Form.Label>
+      <Form.Label htmlFor={name}>{label}</Form.Label>
 
       <Form.Control type="textarea" rows={2} {...field} {...props} />
 
@@ -22,7 +22,6 @@ const TextArea = (props) => {
 
 TextArea.propTypes = {
   label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 

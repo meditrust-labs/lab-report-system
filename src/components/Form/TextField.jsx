@@ -3,12 +3,12 @@ import { Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 const TextField = (props) => {
-  const { label, id, name } = props;
+  const { label, name } = props;
   const [field, meta] = useField(props);
 
   return (
     <Form.Group>
-      <Form.Label htmlFor={id || name}>{label}</Form.Label>
+      <Form.Label htmlFor={name}>{label}</Form.Label>
 
       <Form.Control type="text" {...field} {...props} />
 
@@ -21,7 +21,6 @@ const TextField = (props) => {
 
 TextField.propTypes = {
   label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 

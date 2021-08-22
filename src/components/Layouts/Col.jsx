@@ -16,9 +16,16 @@ function COL(props) {
   );
 }
 
+COL.defaultProps = {
+  title: "",
+};
+
 COL.propTypes = {
-  children: PropTypes.element.isRequired,
-  title: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+  title: PropTypes.string,
 };
 
 export default COL;

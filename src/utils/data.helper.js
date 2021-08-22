@@ -45,5 +45,5 @@ export const formatFetchedData = (values) => {
   newValues.bloodPressure = getNumericData(newValues.bloodPressure);
   newValues.bloodSugar = getNumericData(newValues.bloodSugar);
 
-  return values;
+  return newValues;
 };

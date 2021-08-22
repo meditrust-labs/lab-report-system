@@ -29,7 +29,7 @@ const FileUpload = () => {
       setMsg("Photo uploaded");
     } catch (err) {
       toast.error("An error occured, while uploading file", { id });
-      setError(err);
+      setError(err.message);
       setMsg("");
     }
     setLoading(false);

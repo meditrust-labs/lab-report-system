@@ -58,8 +58,8 @@ function CreateReport() {
       toast.error("An error occurred while saving report, please try again", {
         id,
       });
-      console.log(err);
-      setError(`${err}`);
+      console.log(err, err.message);
+      setError(`${err}: ${err.message}`);
     }
 
     setSaving(false);

@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 
 import GeneratePDF from "@Helpers/pdf.helper";
 import ReportsApi from "@Services/firebase.service";
-import { REPORT_FIELDS } from "../constants";
 
 function TableView(props) {
   const { reports, updateData } = props;
@@ -133,7 +132,7 @@ function TableView(props) {
 }
 
 TableView.propTypes = {
-  reports: PropTypes.arrayOf(PropTypes.instanceOf(REPORT_FIELDS)).isRequired,
+  reports: PropTypes.arrayOf(Object).isRequired,
   updateData: PropTypes.func.isRequired,
 };
 

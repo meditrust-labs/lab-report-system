@@ -6,7 +6,7 @@ const reportsRef = db.collection("reports");
 const currentRef = db.collection("current");
 
 async function get() {
-  return reportsRef.orderBy("createdAt", "desc").limit(10).get();
+  return reportsRef.orderBy("createdAt", "desc").get();
 }
 
 async function searchByName(query) {
@@ -77,7 +77,7 @@ async function save(formData) {
 async function upload(photo) {
   return new Promise((resolve, reject) => {
     if (!photo) {
-      reject(new Error("Please select a file"));
+      reject(new Error("Please select a photo !"));
     }
     if (!ALLOWED_EXTNS.exec(photo.name)) {
       reject(new Error("Please upload a .jpg or .jpeg file"));

@@ -4,10 +4,10 @@ import PropTypes from "prop-types";
 
 const DateField = (props) => {
   const [field, meta] = useField(props);
-  const { label, name, id, ...rest } = props;
+  const { label, name, ...rest } = props;
   return (
     <Form.Group>
-      <Form.Label htmlFor={id || name}>{label}</Form.Label>
+      <Form.Label htmlFor={name}>{label}</Form.Label>
 
       <Form.Control type="date" {...field} {...rest} />
 
@@ -20,7 +20,6 @@ const DateField = (props) => {
 
 DateField.propTypes = {
   label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 

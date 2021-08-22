@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { getExpiryDate } from "@Helpers/date.helper";
 
 const ExpiryDateField = (props) => {
-  const { label, id, name } = props;
+  const { label, name } = props;
 
   const {
     values: { dateExamined },
@@ -24,7 +24,7 @@ const ExpiryDateField = (props) => {
 
   return (
     <Form.Group>
-      <Form.Label htmlFor={id || name}>{label}</Form.Label>
+      <Form.Label htmlFor={name}>{label}</Form.Label>
 
       <Form.Control type="date" {...field} {...props} />
 
@@ -37,7 +37,6 @@ const ExpiryDateField = (props) => {
 
 ExpiryDateField.propTypes = {
   label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 
