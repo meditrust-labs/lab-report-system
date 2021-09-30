@@ -3,7 +3,7 @@
 This project is developed for a client who runs a pathology lab in Delhi, India. Although there are softwares available in the market for this purpose but they are bulky, difficult to use, hard on the eyes and they don't offer customizations. The client wanted a software which fulfill his requirements, easy to use, and can be accessed from anywhere without the hassle of any installation process.
 
 This pathology lab conducts full body examination of candidates who are migrating to other countries.
-This project is being used by the lab, they create and manage 30-40 reports per day. In the past month, this project helped them in generating more than 1200 reports.
+This project is being used by the lab, they create and manage 30-40 reports per day. In the past three months, this project helped them in generating more than 1200 reports.
 
 ## Overview
 
