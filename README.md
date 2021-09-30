@@ -35,9 +35,9 @@ Use the following credentials to access the dashboard-
 **Email** - test@test.com
 **Password** - test123
 
-First time load is a little bit slow because it fetches the report templates and stores them in the Cache Storage. When the reports are cached, the pdf generation time reduces by 40%.
+First time load is a little bit slow because it fetches the report templates and stores them in the Cache Storage. When the reports are cached, the pdf generation time reduces by **40%**.
 
-### Upcoming Features
+## Upcoming Features
 
 1.  **Generating a unique QR Code for every report.** - This feature is suggested by the lab to make it easy to verify the integrety of the report.
 
