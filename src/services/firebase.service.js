@@ -22,7 +22,7 @@ const ReportsApi = {
 };
 
 async function get() {
-  return await reportsRef.orderBy("createdAt", "desc").limit(10).get();
+  return await reportsRef.orderBy("createdAt", "desc").limit(25).get();
 }
 
 async function searchByName(query) {
