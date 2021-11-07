@@ -17,3 +17,12 @@ export const convertDate = (value) => {
   date = date.join("-");
   return date;
 };
+
+export const customParse = (value) => {
+  let date = value.split("-");
+  const temp = date[0];
+  date[0] = date[2];
+  date[2] = temp;
+  date = date.join("/");
+  return date;
+};

@@ -3,10 +3,50 @@ import { storage, db, getTime } from "../firebase.config";
 import { ALLOWED_EXTNS } from "../constants";
 
 const reportsRef = db.collection("reports");
-const currentRef = db.collection("current");
+const statsRef = db.collection("reports").doc("--stats--");
 
 async function get() {
   return reportsRef.orderBy("createdAt", "desc").get();
+}
+
+function save(formData) {
+  const newFormData = { ...formData };
+  newFormData.createdAt = getTime.serverTimestamp();
+
+  return db.runTransaction((transaction) => {
+    return transaction.get(statsRef).then((statsDoc) => {
+      if (!statsDoc.exists) {
+        return console.log("Stats doc is missing !");
+      }
+
+      // Update Report Count and Reference No
+      const newCount = statsDoc.data().reportCount + 1;
+      const newReference = statsDoc.data().reference + 1;
+      transaction.update(statsRef, {
+        reportCount: newCount,
+        reference: newReference,
+      });
+
+      // Save Report Doc
+      const newLabSrNo = `MT_${newCount}`;
+      const newReferenceNo = `MT_${newReference}`;
+
+      const newReportRef = reportsRef.doc(newLabSrNo);
+      newFormData.labSrNo = newLabSrNo;
+      newFormData.refrence = newReferenceNo;
+
+      transaction.set(newReportRef, newFormData);
+
+      const obj = { labSrNo: newLabSrNo, refrenceNo: newReferenceNo };
+      return obj;
+    });
+  });
+}
+
+async function update(formData) {
+  const newFormData = { ...formData };
+  newFormData.updatedAt = getTime.serverTimestamp();
+  return reportsRef.doc(formData.labSrNo).update(newFormData);
 }
 
 async function searchByName(query) {
@@ -55,25 +95,6 @@ async function getById(id) {
   return report;
 }
 
-async function update(formData) {
-  const newFormData = { ...formData };
-  newFormData.updatedAt = getTime.serverTimestamp();
-  return reportsRef.doc(formData.labSrNo).update(newFormData);
-}
-
-async function save(formData) {
-  const newFormData = { ...formData };
-  newFormData.createdAt = getTime.serverTimestamp();
-
-  const saveData = reportsRef.doc(`MT_${formData.lab + 1}`).set(newFormData);
-  const updateCurrent = currentRef.doc(formData.id).update({
-    lab: formData.lab + 1,
-    refrence: formData.refrence + 1,
-  });
-
-  return Promise.all([saveData, updateCurrent]);
-}
-
 async function upload(photo) {
   return new Promise((resolve, reject) => {
     if (!photo) {
@@ -107,14 +128,14 @@ async function upload(photo) {
   });
 }
 
-async function getCurrent() {
-  let res;
-  const querySnapshot = await currentRef.get();
-  querySnapshot.forEach((doc) => {
-    res = { id: doc.id, ...doc.data() };
-  });
-  return res;
-}
+// async function getCurrent() {
+//   let res;
+//   const querySnapshot = await currentRef.get();
+//   querySnapshot.forEach((doc) => {
+//     res = { id: doc.id, ...doc.data() };
+//   });
+//   return res;
+// }
 
 async function deleteReportById(photoName, id) {
   const deleteReport = reportsRef.doc(id).delete();
@@ -123,9 +144,7 @@ async function deleteReportById(photoName, id) {
 }
 
 async function resetReference() {
-  const snapshot = await currentRef.get();
-  const docId = snapshot.docs[0].id;
-  await currentRef.doc(docId).update({ refrence: 0 });
+  await statsRef.update({ reference: 0 });
 }
 
 const ReportsApi = {
@@ -138,7 +157,7 @@ const ReportsApi = {
   update,
   save,
   upload,
-  getCurrent,
+  // getCurrent,
   delete: deleteReportById,
   resetReference,
 };

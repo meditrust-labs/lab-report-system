@@ -6,7 +6,7 @@ export const FINAL_REPORT_URL = `${BASE_URL}/reports/final-report.pdf`;
 export const STAMP_URL = `${BASE_URL}/images/stamp.png`;
 export const CACHE_NAME = "meditrust_app";
 
-export const ALLOWED_EXTNS = /(\.jpg|\.jpeg)$/i;
+export const ALLOWED_EXTNS = /(\.jpg|\.jpeg|\.png)$/i;
 
 export const EXCLUDED_FIELDS = [
   "photoName",
@@ -28,6 +28,10 @@ export const SEARCH_OPTIONS = {
 };
 
 export const REPORT_FIELDS = {
+  // Serial Number
+  labSrNo: "NOT ASSIGNED",
+  refrenceNo: "NOT ASSIGNED",
+
   // Candidate Information
   dateExamined: "",
   dateExpiry: "",

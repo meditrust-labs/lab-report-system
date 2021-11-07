@@ -43,13 +43,16 @@ function CreateReport() {
 
     const formattedFormData = formatSavingData(formData);
     try {
-      await GeneratePDF(formattedFormData, formData.reportCompleted);
-
+      let obj;
       if (data.edit) {
         await ReportsApi.update(formattedFormData);
       } else {
-        await ReportsApi.save(formattedFormData);
+        obj = await ReportsApi.save(formattedFormData);
+        formattedFormData.labSrNo = obj.labSrNo;
+        formattedFormData.refrenceNo = obj.refrenceNo;
       }
+
+      await GeneratePDF(formattedFormData, formData.reportCompleted);
 
       toast.success("Report saved successfully", { id });
       setError("");
@@ -74,37 +77,29 @@ function CreateReport() {
       const editReport = !!labSrNo;
 
       const toastId = editReport
-        ? toast.loading("loading report data ...")
-        : toast.loading("creating an empty report ...");
+        ? toast.loading("loading report ...")
+        : toast.loading("creating new report ...");
 
-      const fetchedData = editReport
-        ? await ReportsApi.getById(labSrNo)
-        : await ReportsApi.getCurrent();
-
-      if (fetchedData) {
-        const reportData = editReport
-          ? fetchedData
-          : {
-              id: fetchedData.id,
-              lab: fetchedData.lab,
-              refrence: fetchedData.refrence,
-              labSrNo: `MT_${fetchedData.lab + 1}`,
-              refrenceNo: `MT_${fetchedData.refrence + 1}`,
-              ...REPORT_FIELDS,
-            };
-        if (editReport)
-          toast.success("Now you can edit the report", { id: toastId });
-        else toast.success("Go Ahead ! report is ready.", { id: toastId });
-
+      let reportData = null;
+      if (editReport) {
+        try {
+          reportData = await ReportsApi.getById(labSrNo);
+        } catch (e) {
+          toast.error("No report found with this serial no.", { id: toastId });
+          history.push("/dashboard/reports");
+        }
         setData({
           report: reportData,
-          edit: editReport,
+          edit: true,
         });
       } else {
-        toast.error("No report found with this serial no.", { id: toastId });
-        history.push("/dashboard/reports");
+        setData({
+          report: { ...REPORT_FIELDS },
+          edit: false,
+        });
       }
 
+      toast.success("Report is ready!", { id: toastId });
       setLoading(false);
     }
     fetchData();
