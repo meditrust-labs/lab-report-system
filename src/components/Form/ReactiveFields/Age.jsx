@@ -15,8 +15,9 @@ const Age = () => {
   useEffect(() => {
     const d = customParse(dob);
     const dateOfBirth = parse(d, "dd/MM/yyyy", new Date());
-    const age = differenceInYears(new Date(), dateOfBirth);
-    setFieldValue("age", age.toString());
+    let age = differenceInYears(new Date(), dateOfBirth);
+    age = Number.isNaN(age) ? "" : age.toString();
+    setFieldValue("age", age);
   }, [dob, setFieldValue, touched.dob]);
 
   return <TextField name="age" label="Age" />;
