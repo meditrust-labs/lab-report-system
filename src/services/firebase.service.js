@@ -6,7 +6,7 @@ const reportsRef = db.collection("reports");
 const statsRef = db.collection("reports").doc("--stats--");
 
 async function get() {
-  return reportsRef.orderBy("createdAt", "desc").get();
+  return reportsRef.orderBy("createdAt", "desc").limit(25).get();
 }
 
 function save(formData) {
@@ -33,7 +33,7 @@ function save(formData) {
 
       const newReportRef = reportsRef.doc(newLabSrNo);
       newFormData.labSrNo = newLabSrNo;
-      newFormData.refrence = newReferenceNo;
+      newFormData.refrenceNo = newReferenceNo;
 
       transaction.set(newReportRef, newFormData);
 
@@ -143,8 +143,18 @@ async function deleteReportById(photoName, id) {
   await Promise.all([deleteReport, deletePhoto]);
 }
 
-async function resetReference() {
-  await statsRef.update({ reference: 0 });
+function resetReference() {
+  return db.runTransaction((transaction) => {
+    return transaction.get(statsRef).then((statsDoc) => {
+      if (!statsDoc.exists) {
+        return console.log("Stats doc is missing !");
+      }
+      // Set Reference No to Zero (0)
+      return transaction.update(statsRef, {
+        reference: 0,
+      });
+    });
+  });
 }
 
 const ReportsApi = {

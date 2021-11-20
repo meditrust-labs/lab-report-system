@@ -18,6 +18,10 @@ export const EXCLUDED_FIELDS = [
   "refrence",
   "updatedAt",
   "createdAt",
+  "passport",
+  "aadhaar",
+  "govtIdValue",
+  "govtId",
 ];
 
 export const SEARCH_OPTIONS = {
@@ -51,6 +55,8 @@ export const REPORT_FIELDS = {
 
   nationality: "",
   passport: "",
+  aadhaar: "",
+  // govtId: "Passport",
   poi: "",
   post: "",
 
