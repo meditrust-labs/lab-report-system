@@ -10,6 +10,7 @@ import Login from "@Pages/Login";
 import Signup from "@Pages/Signup";
 import Dashboard from "@Pages/Dashboard";
 import ResetPassword from "@Pages/ResetPassword";
+import DownloadReportFromUrl from "@Pages/DownloadReportFromUrl";
 
 import { cacheDataOnLoad } from "@Helpers/cache.helper";
 
@@ -48,6 +49,10 @@ function App() {
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <Route path="/reset-password" component={ResetPassword} />
               <Route path="/signup" component={Signup} />
+              <Route
+                path="/download/:serialNo/:token"
+                component={DownloadReportFromUrl}
+              />
             </Switch>
           </AuthProvider>
         </Router>

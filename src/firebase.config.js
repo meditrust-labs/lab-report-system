@@ -15,5 +15,6 @@ const app = firebase.initializeApp({
 export const auth = app.auth();
 export const storage = app.storage();
 export const db = app.firestore();
+export const runTransaction = app.firestore().runTransaction;
 export const getTime = firebase.firestore.FieldValue;
 export default app;

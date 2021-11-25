@@ -24,9 +24,6 @@ async function GeneratePDF(formData, flag) {
   // Load a PDF with form fields
   const pdfDoc = await PDFDocument.load(formPdfBytes);
 
-  // Embed the photo
-  const photo = await pdfDoc.embedJpg(photoBytes);
-
   // Get the form containing all the fields
   const form = pdfDoc.getForm();
 
@@ -39,9 +36,29 @@ async function GeneratePDF(formData, flag) {
     field.setText(value);
   });
 
-  // set candidate photo
-  const photoField = form.getButton("photo");
-  photoField.setImage(photo);
+  if (formData.passport.length > 0) {
+    const passportNo = formData.passport;
+    const govtIdField = form.getTextField("govtId");
+    const passportField = form.getTextField("govtIdValue");
+
+    passportField.setText(passportNo);
+    govtIdField.setText("Passport No.");
+  } else if (formData.aadhaar.length > 0) {
+    const aadhaarNo = formData.aadhaar;
+    const govtIdField = form.getTextField("govtId");
+    const aadhaarField = form.getTextField("govtIdValue");
+
+    aadhaarField.setText(aadhaarNo);
+    govtIdField.setText("Aadhaar No.");
+  }
+
+  if (photoUrl.length > 1) {
+    // Embed the photo
+    const photo = await pdfDoc.embedJpg(photoBytes);
+    // set candidate photo
+    const photoField = form.getButton("photo");
+    photoField.setImage(photo);
+  }
 
   if (flag) {
     // Set FIT/UNFIT value
@@ -56,7 +73,6 @@ async function GeneratePDF(formData, flag) {
       form.getTextField("fit").setText("");
       form.getTextField("unfit").setText(value);
     }
-
     // Embed the stamp
     const stamp = await pdfDoc.embedPng(stampBytes);
     const stampField = form.getButton("stamp");
@@ -64,9 +80,7 @@ async function GeneratePDF(formData, flag) {
   }
 
   form.flatten();
-
   const pdfBytes = await pdfDoc.save();
-
   downloadjs(pdfBytes, `Report-${formData.labSrNo}.pdf`, "application/pdf");
 }
 
