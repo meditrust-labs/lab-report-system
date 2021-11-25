@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Container, Row, Button } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
@@ -47,6 +48,7 @@ function CreateReport() {
       if (data.edit) {
         await ReportsApi.update(formattedFormData);
       } else {
+        formattedFormData.token = uuidv4();
         obj = await ReportsApi.save(formattedFormData);
         formattedFormData.labSrNo = obj.labSrNo;
         formattedFormData.refrenceNo = obj.refrenceNo;

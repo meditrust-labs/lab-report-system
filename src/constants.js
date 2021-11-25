@@ -22,6 +22,7 @@ export const EXCLUDED_FIELDS = [
   "aadhaar",
   "govtIdValue",
   "govtId",
+  "token",
 ];
 
 export const SEARCH_OPTIONS = {
