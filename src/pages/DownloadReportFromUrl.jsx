@@ -47,7 +47,7 @@ const DownloadReportFromUrl = () => {
   return (
     <Container
       className="d-flex align-items-center justify-content-center"
-      style={{ textAlign: "center", marginTop: "5rem" }}
+      style={{ textAlign: "center", marginTop: "10rem" }}
     >
       <div className="w-100" style={{ maxWidth: "400px" }}>
         {msg.length > 0 && <Alert variant="primary">{msg}</Alert>}

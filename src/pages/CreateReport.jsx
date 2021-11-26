@@ -46,6 +46,10 @@ function CreateReport() {
     try {
       let obj;
       if (data.edit) {
+        if (!formattedFormData.token) {
+          formattedFormData.token = uuidv4();
+          console.log("token doesn't exists");
+        }
         await ReportsApi.update(formattedFormData);
       } else {
         formattedFormData.token = uuidv4();
