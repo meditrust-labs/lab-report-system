@@ -6,7 +6,8 @@ const reportsRef = db.collection("reports");
 const statsRef = db.collection("reports").doc("--stats--");
 
 async function get() {
-  return reportsRef.orderBy("createdAt", "desc").limit(25).get();
+  // return reportsRef.orderBy("createdAt", "desc").limit(30).get();
+  return undefined;
 }
 
 function save(formData) {
