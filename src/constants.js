@@ -27,6 +27,7 @@ export const EXCLUDED_FIELDS = [
   "urineBilharziasis",
   "otherRightEye",
   "otherLeftEye",
+  "covid",
 ];
 
 export const SEARCH_OPTIONS = {
