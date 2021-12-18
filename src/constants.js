@@ -81,7 +81,7 @@ export const REPORT_FIELDS = {
   heart: "",
   lungs: "NAD",
   abdomen: "NAD",
-  hydrocil: "",
+  hydrocil: "Not Seen",
 
   // -> venereal diseases (clinical)
   VDRLorTPHA: "Non-Reactive",
