@@ -7,7 +7,7 @@ export const FINAL_REPORT_URL = `${BASE_URL}/reports/final-report.pdf`;
 export const STAMP_URL = `${BASE_URL}/images/stamp.png`;
 export const CACHE_NAME = "meditrust_app";
 
-export const ALLOWED_EXTNS = /(\.jpg|\.jpeg|\.png)$/i;
+export const ALLOWED_EXTNS = /(\.jpg|\.jpeg)$/i;
 
 export const EXCLUDED_FIELDS = [
   "photoName",
