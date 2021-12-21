@@ -76,9 +76,9 @@ function Login() {
           <Link to="/reset-password">Forgot Password?</Link>
         </div>
 
-        <div className="mt-4 text-center">
+        {/* <div className="mt-4 text-center">
           <Link to="/signup">Create an account</Link>
-        </div>
+        </div> */}
       </div>
     </Container>
   );
