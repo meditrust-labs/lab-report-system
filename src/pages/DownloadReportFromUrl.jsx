@@ -6,9 +6,13 @@ import toast from "react-hot-toast";
 import ReportsApi from "@Services/firebase.service";
 import GeneratePDF from "@Helpers/pdf.helper";
 
+import { useAuth } from "@Contexts/AuthContext";
+
 const DownloadReportFromUrl = () => {
   const [msg, setMsg] = useState("");
   const { serialNo, token } = useParams();
+
+  const { anonymousSignIn } = useAuth();
 
   const downloadReport = async (report) => {
     setMsg("Downloading Report...");
@@ -29,6 +33,7 @@ const DownloadReportFromUrl = () => {
     async function verifyReport() {
       let report = null;
       try {
+        await anonymousSignIn();
         report = await ReportsApi.getById(serialNo);
         if (report && report.token === token) {
           await downloadReport(report);
@@ -37,7 +42,9 @@ const DownloadReportFromUrl = () => {
         }
       } catch (err) {
         console.log(err);
-        setMsg("An error occured!, please try again later");
+        setMsg(
+          "An unexpected error occured, please try again in a few moments"
+        );
       }
     }
 
