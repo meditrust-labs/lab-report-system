@@ -57,9 +57,9 @@ export default function MedicalExaminationFields() {
             <option value="Non-Reactive">Non-Reactive</option>
           </SelectField>
         </COL>
-        {/* <COL title="CHEST X-RAY">
+        <COL title="CHEST X-RAY">
           <TextField name="chest" label="" />
-        </COL> */}
+        </COL>
         <COL title="PREGNANCY">
           <Pregnancy />
         </COL>

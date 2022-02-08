@@ -28,7 +28,6 @@ export const EXCLUDED_FIELDS = [
   "otherRightEye",
   "otherLeftEye",
   "covid",
-  "chest",
 ];
 
 export const SEARCH_OPTIONS = {
@@ -89,7 +88,7 @@ export const REPORT_FIELDS = {
   VDRLorTPHA: "Non-Reactive",
 
   // -> chest x ray
-  // chest: "NAD",
+  chest: "NAD",
 
   // -> pregnancy
   pregnancy: "Not Applicable",
