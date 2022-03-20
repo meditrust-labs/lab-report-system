@@ -12,7 +12,7 @@ const DownloadReportFromUrl = () => {
   const [msg, setMsg] = useState("");
   const { serialNo, token } = useParams();
 
-  const { anonymousSignIn } = useAuth();
+  const { anonymousSignIn, logout } = useAuth();
 
   const downloadReport = async (report) => {
     setMsg("Downloading Report...");
@@ -35,6 +35,8 @@ const DownloadReportFromUrl = () => {
       try {
         await anonymousSignIn();
         report = await ReportsApi.getById(serialNo);
+        await logout();
+
         if (report && report.token === token) {
           await downloadReport(report);
         } else {
@@ -49,6 +51,11 @@ const DownloadReportFromUrl = () => {
     }
 
     verifyReport();
+
+    // This will be called when this component is unmount
+    return () => {
+      logout();
+    };
   }, []);
 
   return (
