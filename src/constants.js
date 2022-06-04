@@ -2,8 +2,8 @@ export const BASE_URL =
   "https://mohdimran001.github.io/lab-report-management-system/public/assets";
 export const QRCODE_BASE_URL = "https://api.qrserver.com/v1/create-qr-code";
 export const DOMAIN = process.env.REACT_APP_DOMAIN;
-export const TEST_REPORT_URL = `https://firebasestorage.googleapis.com/v0/b/lab-report-system.appspot.com/o/assets%2Freports%2Ftest-report.pdf?alt=media&token=92259018-1091-4800-aee9-2bd66290acfe`;
-export const FINAL_REPORT_URL = `https://firebasestorage.googleapis.com/v0/b/lab-report-system.appspot.com/o/assets%2Freports%2Ffinal-report.pdf?alt=media&token=8877dda1-a124-4e77-8cf2-042a148381c1`;
+export const TEST_REPORT_URL = `https://firebasestorage.googleapis.com/v0/b/lab-report-system.appspot.com/o/assets%2Freports%2Ftest-report.pdf?alt=media&token=a2d0327f-16d0-4d91-bbc9-b13cbefc03e2`;
+export const FINAL_REPORT_URL = `https://firebasestorage.googleapis.com/v0/b/lab-report-system.appspot.com/o/assets%2Freports%2Ffinal-report.pdf?alt=media&token=0863f9bf-c325-487a-a878-a529ba0cf0e1`;
 export const STAMP_URL = `https://firebasestorage.googleapis.com/v0/b/lab-report-system.appspot.com/o/assets%2Fstamp.png?alt=media&token=18b5ff60-cdcb-4e1b-8a50-ad5c91b5adac`;
 export const CACHE_NAME = "meditrust_app";
 

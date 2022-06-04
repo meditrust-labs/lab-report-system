@@ -15,6 +15,7 @@ function Remarks(props) {
           <option value="">-- Select --</option>
           <option value="FIT"> FIT </option>
           <option value="UNFIT"> UNFIT </option>
+          <option value="PENDING"> PENDING </option>
         </SelectField>
         <TextArea name="remarks" label="Remarks:-" />
         <Field

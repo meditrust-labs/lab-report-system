@@ -64,7 +64,7 @@ async function fillPDF(formData, flag, formUrl, photoUrl) {
       qrCodeField.setImage(qrCode);
     }
 
-    // Set FIT/UNFIT value
+    // Set FIT/UNFIT/PENDING value
     const value = formData.fit;
     const field = form.getTextField("fit-remarks");
     field.setText(value);
@@ -72,6 +72,8 @@ async function fillPDF(formData, flag, formUrl, photoUrl) {
       form.getTextField("fit").setText(value);
     } else if (value === "UNFIT") {
       form.getTextField("unfit").setText(value);
+    } else if (value === "PENDING") {
+      form.getTextField("pending").setText(value);
     }
 
     // Embed the stamp
